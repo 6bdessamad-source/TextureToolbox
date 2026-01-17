@@ -43,6 +43,10 @@
             --warning: #f59e0b;
             --danger: #ef4444;
             
+            /* BADGE COLORS */
+            --badge-edit: #f59e0b;      /* Yellow/Orange */
+            --badge-invert: #3b82f6;    /* Blue */
+
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
             --shadow: 0 4px 20px rgba(0,0,0,0.4);
             --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
@@ -135,13 +139,12 @@
             align-items: center; 
             justify-content: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            overflow: hidden; /* Ensure image stays inside */
+            overflow: hidden;
         }
-        /* UPDATED: Image fills the container completely */
         .brand-icon img {
             width: 100%; 
             height: 100%; 
-            object-fit: contain; /* or cover, depending on your logo */
+            object-fit: contain;
             display: block;
         }
         .brand-text { 
@@ -320,9 +323,23 @@
 
         .slot-info { flex: 1; pointer-events: none; }
         .slot-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; color: var(--text-main); }
-        .slot-meta { font-size: 0.7rem; color: var(--text-sec); display: flex; gap: 6px; align-items: center;}
-        .tag-edit { color: var(--warning); font-weight: 700; display: none; font-size: 0.65rem; }
-        .slot.edited .tag-edit { display: inline-flex; }
+        .slot-meta { font-size: 0.7rem; color: var(--text-sec); display: flex; gap: 6px; align-items: center; flex-wrap: wrap;}
+        
+        /* STATUS TAGS */
+        .status-tag { 
+            font-weight: 700; 
+            font-size: 0.65rem; 
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .tag-edit { color: var(--badge-edit); }
+        .tag-invert { color: var(--badge-invert); }
+        
+        .status-tag::before {
+            content: '●';
+            font-size: 0.6rem;
+        }
 
         /* Import Overlay */
         .import-trigger {
@@ -444,10 +461,13 @@
             background: var(--accent); border-radius: 50%; cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 2px solid var(--bg-card);
         }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
         .modal-btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 1px solid transparent; }
         .modal-btn-cancel { background: var(--bg-input); border-color: var(--border); color: var(--text-main); }
         .modal-btn-apply { background: var(--accent); color: #fff; }
+        /* NEW: Reset Button Style */
+        .modal-btn-reset { background: transparent; color: var(--danger); font-size: 0.85rem; padding: 10px 0; text-decoration: underline; }
+        .modal-btn-reset:hover { color: #f87171; }
 
         /* --- FOOTER --- */
         .footer {
@@ -539,10 +559,17 @@
                     <div class="slider-label"><span>Sharpness</span><span class="slider-value" id="v-sh">0</span></div>
                     <input type="range" id="sl-sh" min="0" max="10" step="1" value="0">
                 </div>
+                <div class="slider-row">
+                    <div class="slider-label"><span>Threshold</span><span class="slider-value" id="v-th">0</span></div>
+                    <input type="range" id="sl-th" min="0" max="255" value="0">
+                </div>
                 
                 <div class="modal-actions">
-                    <button class="modal-btn modal-btn-cancel" onclick="closeEditor()">Cancel</button>
-                    <button class="modal-btn modal-btn-apply" onclick="applyEdit()">Apply</button>
+                    <button class="modal-btn modal-btn-reset" onclick="resetEditor()">Reset to Original</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="modal-btn modal-btn-cancel" onclick="closeEditor()">Cancel</button>
+                        <button class="modal-btn modal-btn-apply" onclick="applyEdit()">Apply</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -615,7 +642,10 @@
                         <option value="jpg">Jpg</option>
                         <option value="bmp">BMP</option>
                         <option value="webp">WebP</option>
-                   
+                        <option value="bc7">BC7</option>
+                        <option value="bc1">BC1 / BC3</option>
+                        <option value="astc">ASTC</option>
+                        <option value="bc6h">Bc6h</option>
                     </select>
                 </div>
 
@@ -700,7 +730,8 @@
             tgtFmt: 'ORD',
             exportType: 'png',
             maps: { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null },
-            edited: {},
+            originals: {}, // Stores absolute original data before edits
+            mods: {},      // { edited: bool, inverted: bool }
             w: 0, 
             h: 0, 
             editMap: null 
@@ -723,8 +754,6 @@
                 state.srcFmt = el('sourceFormat').value; 
                 if(state.srcImg) unpack(); 
             };
-            
-            // Listen to export format changes
             el('exportFormat').onchange = () => {
                 state.exportType = el('exportFormat').value;
                 if(!el('processBtn').disabled) process(); 
@@ -733,7 +762,8 @@
             el('sourceInput').onchange = (e) => loadSource(e.target.files[0]);
             el('processBtn').onclick = process;
             
-            ['b','c','s','h','sh'].forEach(k => el('sl-'+k).oninput = updatePreviewEdit);
+            // Add listeners for editor sliders
+            ['b','c','s','h','sh','th'].forEach(k => el('sl-'+k).oninput = updatePreviewEdit);
 
             setMode(document.querySelector('.nav-tab[data-mode="create"]'));
             window.addEventListener('resize', () => {});
@@ -756,7 +786,8 @@
             document.documentElement.style.setProperty('--accent-hover', lightenColor(accentColor, 10));
             
             state.maps = { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null };
-            state.edited = {};
+            state.originals = {};
+            state.mods = {};
             state.srcImg = null;
             el('sourceSlot').classList.remove('filled'); 
             el('sourceSlot').classList.add('missing');
@@ -814,12 +845,25 @@
 
         function renderSlot(ch, type, isFilled, allowUp) {
             const div = document.createElement('div');
-            div.className = `slot ${isFilled ? 'filled' : 'missing'} ${state.edited[type] ? 'edited' : ''}`;
+            // Check mods
+            const mod = state.mods[type] || { edit: false, invert: false };
+            const isMod = mod.edit || mod.invert;
+            
+            div.className = `slot ${isFilled ? 'filled' : 'missing'} ${isMod ? 'edited' : ''}`;
             const canEdit = isFilled && state.maps[type];
             
             let status = isFilled ? "Ready" : "Missing";
             if(state.mode === 'convert' && isFilled) status = "Extracted";
             if(!state.maps[type] && isFilled) status = "Calculated";
+
+            // Determine Labels
+            let tagHTML = '';
+            if (mod.edit) {
+                tagHTML += `<span class="status-tag tag-edit">EDITED</span>`;
+            } 
+            if (mod.invert) {
+                tagHTML += `<span class="status-tag tag-invert">INVERTED</span>`;
+            }
 
             div.innerHTML = `
                 <div class="ch-badge bg-${ch}">${ch}</div>
@@ -827,10 +871,11 @@
                     <div class="slot-name">${NAMES[type]}</div>
                     <div class="slot-meta">
                         ${status} 
-                        <span class="tag-edit">EDITED</span>
+                        ${tagHTML}
                     </div>
                 </div>
                 <div class="slot-actions">
+                    ${canEdit ? `<button class="mini-btn" title="Invert" onclick="invertMap('${type}')">◑</button>` : ''}
                     ${canEdit ? `<button class="mini-btn" title="Edit texture" onclick="openEditor('${type}')">✎</button>` : ''}
                     ${isFilled && allowUp ? `<button class="mini-btn" title="Replace" onclick="el('in-${ch}').click()">↻</button>` : ''}
                 </div>
@@ -838,6 +883,24 @@
                 ${allowUp ? `<input type="file" id="in-${ch}" class="import-trigger" accept="image/*" onchange="loadMap('${type}',this)">` : ''}
             `;
             el('slotsArea').appendChild(div);
+        }
+        
+        // --- INVERT FUNCTION ---
+        function invertMap(type) {
+            const d = state.maps[type];
+            if(!d) return;
+            
+            // Invert pixel data
+            for(let i = 0; i < d.length; i++) {
+                d[i] = 255 - d[i];
+            }
+            
+            // Update modification state
+            if(!state.mods[type]) state.mods[type] = { edit: false, invert: false };
+            state.mods[type].invert = !state.mods[type].invert;
+            
+            updateUI();
+            if(!el('processBtn').disabled && state.mode !== 'separate') process();
         }
 
         // --- FILE LOADING ---
@@ -876,8 +939,14 @@
                     c.height = state.h;
                     const ctx = c.getContext('2d'); 
                     ctx.drawImage(img, 0, 0, state.w, state.h);
-                    state.maps[type] = extract(ctx.getImageData(0, 0, state.w, state.h), 0);
-                    state.edited[type] = false; 
+                    
+                    const extracted = extract(ctx.getImageData(0, 0, state.w, state.h), 0);
+                    state.maps[type] = extracted;
+                    // Save ORIGINAL copy for reset
+                    state.originals[type] = new Uint8ClampedArray(extracted);
+                    
+                    // Reset mods for new file
+                    state.mods[type] = { edit: false, invert: false };
                     updateUI();
                 };
                 img.src = e.target.result;
@@ -895,10 +964,16 @@
             const fmt = FORMATS[state.srcFmt]; 
             const idx = { R: 0, G: 1, B: 2, A: 3 };
             state.maps = { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null };
-            state.edited = {};
+            state.originals = {};
+            state.mods = {};
             ['R','G','B','A'].forEach(ch => {
                 const t = fmt.ch[ch]; 
-                if(t !== 'EMPTY') state.maps[t] = extract(d, idx[ch]);
+                if(t !== 'EMPTY') {
+                    const extracted = extract(d, idx[ch]);
+                    state.maps[t] = extracted;
+                    // Save ORIGINAL copy
+                    state.originals[t] = new Uint8ClampedArray(extracted);
+                }
             });
             updateUI();
         }
@@ -915,7 +990,9 @@
         
         function openEditor(type) {
             state.editMap = type;
-            const d = state.maps[type];
+            
+            // ALWAYS Load from ORIGINAL source to allow non-destructive editing
+            const d = state.originals[type]; 
             if(!d) return;
             
             const cvs = el('previewEditCanvas');
@@ -940,10 +1017,22 @@
             }
             ctx.putImageData(idata, 0, 0);
             
-            ['b','c','s'].forEach(k => el('sl-' + k).value = 100);
-            ['h','sh'].forEach(k => el('sl-' + k).value = 0);
+            // Reset sliders to default every open (simple edit workflow)
+            resetEditorSliders();
+            
             updatePreviewEdit();
             el('editorModal').classList.add('active');
+        }
+        
+        function resetEditorSliders() {
+            ['b','c','s'].forEach(k => el('sl-' + k).value = 100);
+            ['h','sh'].forEach(k => el('sl-' + k).value = 0);
+            el('sl-th').value = 0; 
+        }
+
+        function resetEditor() {
+            resetEditorSliders();
+            updatePreviewEdit();
         }
         
         function closeEditor() { 
@@ -960,21 +1049,45 @@
             ['b','c','s'].forEach(k => el('v-' + k).innerText = el('sl-' + k).value + '%');
             el('v-h').innerText = h + '°'; 
             el('v-sh').innerText = el('sl-sh').value;
+            el('v-th').innerText = el('sl-th').value;
             
             ctx.filter = `brightness(${b}%) contrast(${c}%) hue-rotate(${h}deg) saturate(${s}%)`;
             ctx.drawImage(editTmp, 0, 0);
             ctx.filter = 'none';
+
+            const th = parseInt(el('sl-th').value);
+            if (th > 0) {
+                const imgData = ctx.getImageData(0,0, ctx.canvas.width, ctx.canvas.height);
+                const d = imgData.data;
+                for(let i=0; i<d.length; i+=4) {
+                    const v = d[i] >= th ? 255 : 0;
+                    d[i] = d[i+1] = d[i+2] = v;
+                }
+                ctx.putImageData(imgData, 0, 0);
+            }
         }
 
         function applyEdit() {
+            // Check if modification is actually happening
+            const isDefault = 
+                el('sl-b').value == 100 && 
+                el('sl-c').value == 100 && 
+                el('sl-s').value == 100 && 
+                el('sl-h').value == 0 && 
+                el('sl-sh').value == 0 &&
+                el('sl-th').value == 0;
+
             const w = state.w; 
             const h = state.h;
+            
+            // We apply filters to the ORIGINAL data
+            const d = state.originals[state.editMap];
+            
             const tempC = document.createElement('canvas'); 
             tempC.width = w; 
             tempC.height = h;
             const ctx = tempC.getContext('2d');
             
-            const d = state.maps[state.editMap];
             const imgD = ctx.createImageData(w, h);
             for(let i = 0; i < d.length; i++) {
                 imgD.data[i * 4] = d[i]; 
@@ -983,6 +1096,7 @@
                 imgD.data[i * 4 + 3] = 255;
             }
             
+            // Filter Pass
             const filterC = document.createElement('canvas'); 
             filterC.width = w; 
             filterC.height = h;
@@ -1000,8 +1114,34 @@
             const sh = parseInt(el('sl-sh').value);
             if(sh > 0) final = applySharpen(final, sh);
 
-            state.maps[state.editMap] = extract(final, 0);
-            state.edited[state.editMap] = true;
+            const th = parseInt(el('sl-th').value);
+            if(th > 0) {
+                const fd = final.data;
+                for(let i=0; i<fd.length; i+=4) {
+                    const v = fd[i] >= th ? 255 : 0;
+                    fd[i] = fd[i+1] = fd[i+2] = v;
+                }
+            }
+
+            let extractedFinal = extract(final, 0);
+
+            // Re-apply Invert if active (since we worked from Original)
+            if(state.mods[state.editMap] && state.mods[state.editMap].invert) {
+                for(let i=0; i<extractedFinal.length; i++) {
+                    extractedFinal[i] = 255 - extractedFinal[i];
+                }
+            }
+
+            state.maps[state.editMap] = extractedFinal;
+            
+            // Update Status
+            if(!state.mods[state.editMap]) state.mods[state.editMap] = { edit: false, invert: false };
+            
+            if(isDefault) {
+                state.mods[state.editMap].edit = false;
+            } else {
+                state.mods[state.editMap].edit = true;
+            }
             
             closeEditor();
             updateUI(); 
@@ -1037,16 +1177,11 @@
             const type = state.exportType;
             let mime = 'image/png';
             let ext = 'png';
-
-            // Mapping requested values to real Browser Mime Types
-            // Note: BC7/ASTC etc cannot be generated by browser canvas, 
-            // so we fallback to PNG (Source) with the specific label.
             switch(type) {
                 case 'png':  mime = 'image/png'; ext = 'png'; break;
                 case 'jpg':  mime = 'image/jpeg'; ext = 'jpg'; break;
                 case 'bmp':  mime = 'image/bmp'; ext = 'bmp'; break;
                 case 'webp': mime = 'image/webp'; ext = 'webp'; break;
-                // Advanced formats fallback to PNG logic internally
                 case 'bc7':  mime = 'image/png'; ext = 'png'; break; 
                 case 'bc1':  mime = 'image/png'; ext = 'png'; break;
                 case 'astc': mime = 'image/png'; ext = 'png'; break;
