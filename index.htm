@@ -732,6 +732,7 @@
             maps: { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null },
             originals: {}, // Stores absolute original data before edits
             mods: {},      // { edited: bool, inverted: bool }
+            editSettings: {}, // Stores saved slider values { b, c, s, h, sh, th } per channel
             w: 0, 
             h: 0, 
             editMap: null 
@@ -788,6 +789,7 @@
             state.maps = { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null };
             state.originals = {};
             state.mods = {};
+            state.editSettings = {};
             state.srcImg = null;
             el('sourceSlot').classList.remove('filled'); 
             el('sourceSlot').classList.add('missing');
@@ -944,6 +946,7 @@
                     state.maps[type] = extracted;
                     // Save ORIGINAL copy for reset
                     state.originals[type] = new Uint8ClampedArray(extracted);
+                    state.editSettings[type] = null; // Clear previous edits for new file
                     
                     // Reset mods for new file
                     state.mods[type] = { edit: false, invert: false };
@@ -966,6 +969,7 @@
             state.maps = { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null };
             state.originals = {};
             state.mods = {};
+            state.editSettings = {};
             ['R','G','B','A'].forEach(ch => {
                 const t = fmt.ch[ch]; 
                 if(t !== 'EMPTY') {
@@ -1017,8 +1021,16 @@
             }
             ctx.putImageData(idata, 0, 0);
             
-            // Reset sliders to default every open (simple edit workflow)
-            resetEditorSliders();
+            // Load saved settings or defaults
+            const defaults = { b: 100, c: 100, s: 100, h: 0, sh: 0, th: 0 };
+            const settings = state.editSettings[type] || defaults;
+
+            el('sl-b').value = settings.b;
+            el('sl-c').value = settings.c;
+            el('sl-s').value = settings.s;
+            el('sl-h').value = settings.h;
+            el('sl-sh').value = settings.sh;
+            el('sl-th').value = settings.th;
             
             updatePreviewEdit();
             el('editorModal').classList.add('active');
@@ -1142,6 +1154,16 @@
             } else {
                 state.mods[state.editMap].edit = true;
             }
+
+            // Save Settings
+            state.editSettings[state.editMap] = {
+                b: parseInt(el('sl-b').value),
+                c: parseInt(el('sl-c').value),
+                s: parseInt(el('sl-s').value),
+                h: parseInt(el('sl-h').value),
+                sh: parseInt(el('sl-sh').value),
+                th: parseInt(el('sl-th').value)
+            };
             
             closeEditor();
             updateUI(); 
