@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texture Toolbox Pro V9</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* --- THEME VARIABLES --- */
+            --bg-body: #0a0a0a;
+            --bg-card: #141414;
+            --bg-input: #1a1a1a;
+            --bg-hover: #252525;
+            --bg-elevated: #1f1f1f;
+            
+            --border: #2a2a2a;
+            --border-active: #404040;
+            --border-light: #333333;
+            
+            --text-main: #ffffff;
+            --text-sec: #9ca3af;
+            --text-dim: #6b7280;
+            
+            /* BRAND COLORS */
+            --terracotta: #d17756;
+            --terracotta-hover: #e08b6a;
+            --terracotta-dim: rgba(209, 119, 86, 0.12);
+            --terracotta-glow: rgba(209, 119, 86, 0.25);
+            
+            --sky-blue: #6bafdf;
+            --sky-blue-hover: #82bfe6;
+            --sky-blue-dim: rgba(107, 175, 223, 0.12);
+            --sky-blue-glow: rgba(107, 175, 223, 0.25);
+            
+            --accent: var(--terracotta);
+            --accent-hover: var(--terracotta-hover);
+            --accent-dim: var(--terracotta-dim);
+            --accent-glow: var(--terracotta-glow);
+            
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow: 0 4px 20px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
+            --radius: 10px;
+            --radius-sm: 6px;
+            --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+            
+            /* GRID PATTERN COLOR */
+            --grid-color: rgba(255, 255, 255, 0.02);
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --bg-hover: #e2e8f0;
+            --bg-elevated: #ffffff;
+            --border: #e2e8f0;
+            --border-active: #cbd5e1;
+            --border-light: #f1f5f9;
+            --text-main: #0f172a;
+            --text-sec: #64748b;
+            --text-dim: #94a3b8;
+            --terracotta-dim: rgba(209, 119, 86, 0.08);
+            --sky-blue-dim: rgba(107, 175, 223, 0.08);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+            --grid-color: rgba(0, 0, 0, 0.015);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            outline: none; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: var(--bg-body);
+            /* Refined Dot Grid Pattern */
+            background-image: radial-gradient(circle, var(--grid-color) 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- HEADER --- */
+        .navbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand {
+            display: flex; 
+            align-items: center; 
+            gap: 14px;
+            font-weight: 800; 
+            font-size: 1.25rem; 
+            letter-spacing: -0.6px;
+        }
+        .brand-icon {
+            width: 42px; 
+            height: 42px;
+            background: linear-gradient(135deg, var(--terracotta) 0%, var(--sky-blue) 100%);
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .brand-icon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--terracotta) 0%, var(--sky-blue) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .brand-icon:hover::before {
+            opacity: 0.8;
+        }
+        .brand-icon img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain;
+            position: relative;
+            z-index: 1;
+        }
+        .brand-text { 
+            color: var(--text-main);
+            background: linear-gradient(135deg, var(--terracotta) 0%, var(--sky-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-center { 
+            display: flex; 
+            gap: 6px; 
+            background: var(--bg-input); 
+            padding: 5px; 
+            border-radius: var(--radius); 
+            border: 1px solid var(--border);
+        }
+        .nav-tab {
+            padding: 10px 24px; 
+            border: none; 
+            background: transparent;
+            color: var(--text-sec); 
+            font-weight: 600; 
+            cursor: pointer; 
+            border-radius: 7px; 
+            font-size: 0.875rem;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .nav-tab:hover { 
+            color: var(--text-main);
+            background: var(--bg-hover);
+        }
+        .nav-tab.active { 
+            background: var(--bg-card); 
+            color: var(--accent); 
+            box-shadow: var(--shadow-sm);
+        }
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .nav-right { 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+        }
+        .icon-btn {
+            width: 40px; 
+            height: 40px; 
+            border-radius: 8px;
+            background: var(--bg-input); 
+            border: 1px solid var(--border);
+            color: var(--text-sec); 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.25s ease;
+            font-size: 1.1rem;
+        }
+        .icon-btn:hover { 
+            border-color: var(--accent); 
+            color: var(--accent);
+            background: var(--bg-hover);
+            transform: translateY(-1px);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            gap: 24px;
+            padding: 24px;
+            flex: 1;
+            overflow: hidden;
+            max-width: 1800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.3s;
+        }
+        .panel:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .panel-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-elevated);
+            letter-spacing: -0.2px;
+        }
+        .panel-badge { 
+            font-size: 0.7rem; 
+            background: var(--accent-dim); 
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            color: var(--accent); 
+            border: 1px solid transparent;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .panel-scroll {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .panel-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .panel-scroll::-webkit-scrollbar-track {
+            background: var(--bg-input);
+        }
+        .panel-scroll::-webkit-scrollbar-thumb {
+            background: var(--border-active);
+            border-radius: 3px;
+        }
+        .panel-scroll::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* --- CONFIG FORM --- */
+        .config-group { margin-bottom: 24px; }
+        label { 
+            display: block; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            color: var(--text-dim); 
+            margin-bottom: 10px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.8px;
+        }
+        select {
+            width: 100%; 
+            padding: 12px 14px; 
+            background: var(--bg-input); 
+            border: 1px solid var(--border);
+            color: var(--text-main); 
+            border-radius: 8px; 
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        select:hover {
+            border-color: var(--border-active);
+            background: var(--bg-hover);
+        }
+        select:focus { 
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+
+        /* --- SLOTS --- */
+        .slots-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+        
+        .slot {
+            position: relative;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex; 
+            align-items: center; 
+            gap: 16px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .slot:hover { 
+            border-color: var(--border-active);
+            background: var(--bg-hover);
+            transform: translateX(2px);
+        }
+        .slot.filled { 
+            background: var(--bg-card); 
+            border-left: 4px solid var(--success);
+            border-color: var(--success);
+            cursor: default;
+        }
+        .slot.filled:hover {
+            transform: none;
+        }
+        .slot.missing { 
+            border-left: 4px solid var(--warning);
+            border-style: dashed;
+            background: transparent; 
+        }
+
+        .ch-badge {
+            width: 38px; 
+            height: 38px; 
+            border-radius: 8px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: 800; 
+            font-size: 0.85rem; 
+            color: #fff; 
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .bg-R { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .bg-G { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .bg-B { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .bg-A { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+
+        .slot-info { 
+            flex: 1; 
+            position: relative; 
+            z-index: 2; 
+            pointer-events: none;
+        }
+        .slot-name { 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+        .slot-meta { 
+            font-size: 0.75rem; 
+            color: var(--text-sec); 
+            display: flex; 
+            gap: 10px; 
+            align-items: center;
+        }
+        .tag-edit { 
+            color: var(--warning); 
+            font-weight: 700; 
+            display: none;
+            font-size: 0.7rem;
+        }
+        .slot.edited .tag-edit { 
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .tag-edit::before {
+            content: '●';
+            font-size: 0.6rem;
+        }
+
+        /* Import Overlay */
+        .import-trigger {
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            opacity: 0; 
+            cursor: pointer; 
+            z-index: 1;
+        }
+        
+        .slot .import-visual {
+            position: absolute; 
+            right: 16px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            background: var(--bg-card); 
+            border: 1px solid var(--accent);
+            color: var(--accent); 
+            padding: 6px 12px; 
+            border-radius: 6px;
+            font-size: 0.75rem; 
+            font-weight: 600;
+            pointer-events: none; 
+            opacity: 0;
+            transition: all 0.25s;
+        }
+        .slot:hover .import-visual { 
+            opacity: 1;
+        }
+        .slot.filled .import-visual { 
+            display: none; 
+        }
+        
+        /* Empty Slot Specifics */
+        .slot.missing .slot-info { 
+            opacity: 0.6; 
+        }
+
+        /* Actions */
+        .slot-actions { 
+            display: flex; 
+            gap: 6px; 
+            z-index: 3; 
+        }
+        .mini-btn {
+            width: 32px; 
+            height: 32px; 
+            border-radius: 6px; 
+            border: 1px solid var(--border);
+            background: var(--bg-input); 
+            color: var(--text-sec); 
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .mini-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        /* --- PREVIEW AREA --- */
+        .preview-wrapper {
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%;
+            background-color: var(--bg-input);
+            /* Refined Checkered Pattern */
+            background-image: 
+                linear-gradient(45deg, var(--border) 25%, transparent 25%), 
+                linear-gradient(-45deg, var(--border) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, var(--border) 75%), 
+                linear-gradient(-45deg, transparent 75%, var(--border) 75%);
+            background-size: 24px 24px;
+            background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+            align-items: center; 
+            justify-content: center;
+            padding: 32px; 
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-dim);
+            opacity: 0.5;
+        }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+        .empty-state-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        canvas { 
+            max-width: 100%; 
+            max-height: 100%; 
+            box-shadow: 0 12px 48px rgba(0,0,0,0.4); 
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        /* --- SEPARATION RESULTS GRID --- */
+        .results-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px; 
+            width: 100%; 
+            overflow-y: auto; 
+            padding: 12px;
+        }
+        .result-item {
+            background: var(--bg-card); 
+            border: 1px solid var(--border);
+            border-radius: 10px; 
+            padding: 14px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px;
+            transition: all 0.25s;
+        }
+        .result-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-align: center;
+        }
+        .result-thumb {
+            aspect-ratio: 1; 
+            background: #000; 
+            border-radius: 6px; 
+            overflow: hidden;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            background-image: 
+                linear-gradient(45deg, #1a1a1a 25%, transparent 25%), 
+                linear-gradient(-45deg, #1a1a1a 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #1a1a1a 75%), 
+                linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+            background-size: 12px 12px;
+            background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+            border: 1px solid var(--border);
+        }
+        .result-thumb canvas { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain;
+            box-shadow: none;
+            border: none;
+        }
+        .dl-btn-small {
+            width: 100%; 
+            padding: 10px; 
+            background: var(--bg-input);
+            border: 1px solid var(--border); 
+            border-radius: 6px;
+            color: var(--text-main); 
+            font-size: 0.8rem; 
+            cursor: pointer; 
+            text-decoration: none; 
+            text-align: center;
+            transition: all 0.2s; 
+            font-weight: 600;
+        }
+        .dl-btn-small:hover { 
+            border-color: var(--accent); 
+            background: var(--accent); 
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        /* --- MAIN BUTTON --- */
+        .action-area { 
+            padding: 24px; 
+            background: var(--bg-elevated); 
+            border-top: 1px solid var(--border); 
+        }
+        .btn-large {
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            color: #fff; 
+            font-weight: 700; 
+            font-size: 1rem;
+            cursor: pointer; 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2); 
+            transition: all 0.3s;
+            letter-spacing: 0.2px;
+        }
+        .btn-large:hover:not(:disabled) { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+        .btn-large:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        .btn-large:disabled { 
+            opacity: 0.4; 
+            cursor: not-allowed; 
+            background: var(--bg-input); 
+            color: var(--text-dim); 
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(8px);
+            z-index: 1000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.25s;
+        }
+        .modal-overlay.active { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+        .modal-box {
+            background: var(--bg-card); 
+            width: 90%; 
+            max-width: 520px;
+            border-radius: 16px; 
+            border: 1px solid var(--border);
+            display: flex; 
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        .modal-header { 
+            padding: 20px 24px; 
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-weight: 700;
+            font-size: 1.05rem;
+            background: var(--bg-elevated);
+        }
+        .modal-content { 
+            padding: 24px;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--border-active);
+            border-radius: 3px;
+        }
+        
+        .preview-edit-container {
+            height: 200px;
+            background: #000;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+        
+        .slider-row { 
+            margin-bottom: 18px; 
+        }
+        .slider-label { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.85rem; 
+            color: var(--text-sec); 
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .slider-value {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        input[type=range] { 
+            width: 100%; 
+            -webkit-appearance: none; 
+            background: var(--bg-input); 
+            height: 6px; 
+            border-radius: 3px;
+            border: 1px solid var(--border);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; 
+            width: 18px; 
+            height: 18px; 
+            background: var(--accent); 
+            border-radius: 50%; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 18px; 
+            height: 18px; 
+            background: var(--accent); 
+            border-radius: 50%; 
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal-btn-cancel {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+        .modal-btn-cancel:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-active);
+        }
+        .modal-btn-apply {
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            color: #fff;
+        }
+        .modal-btn-apply:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            background: var(--bg-card); 
+            border-top: 1px solid var(--border); 
+            padding: 20px 32px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-size: 0.85rem; 
+            color: var(--text-sec);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .author { 
+            background: linear-gradient(135deg, var(--terracotta) 0%, var(--sky-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .author:hover {
+            opacity: 0.8;
+        }
+        .footer-right {
+            display: flex;
+            gap: 20px;
+        }
+        .social-link { 
+            text-decoration: none; 
+            color: var(--text-sec); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: all 0.2s;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        .social-link:hover { 
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .social-link svg { 
+            width: 18px; 
+            height: 18px; 
+            fill: currentColor; 
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        .d-none { 
+            display: none !important; 
+        }
+        
+        @media (max-width: 1200px) {
+            .main-container { 
+                grid-template-columns: 400px 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .main-container { 
+                grid-template-columns: 1fr; 
+                padding: 16px; 
+            }
+            .navbar { 
+                padding: 0 1rem;
+                height: auto;
+                flex-wrap: wrap;
+                gap: 12px;
+                padding: 12px 16px;
+            }
+            .nav-center {
+                order: 3;
+                width: 100%;
+            }
+            .footer {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="modal-overlay" id="editorModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>Texture Editor</span>
+                <button class="mini-btn" onclick="closeEditor()">✕</button>
+            </div>
+            <div class="modal-content">
+                <div class="preview-edit-container">
+                    <canvas id="previewEditCanvas"></canvas>
+                </div>
+                
+                <div class="slider-row">
+                    <div class="slider-label">
+                        <span>Brightness</span>
+                        <span class="slider-value" id="v-b">100%</span>
+                    </div>
+                    <input type="range" id="sl-b" min="0" max="200" value="100">
+                </div>
+                
+                <div class="slider-row">
+                    <div class="slider-label">
+                        <span>Contrast</span>
+                        <span class="slider-value" id="v-c">100%</span>
+                    </div>
+                    <input type="range" id="sl-c" min="0" max="200" value="100">
+                </div>
+                
+                <div class="slider-row">
+                    <div class="slider-label">
+                        <span>Saturation</span>
+                        <span class="slider-value" id="v-s">100%</span>
+                    </div>
+                    <input type="range" id="sl-s" min="0" max="200" value="100">
+                </div>
+                
+                <div class="slider-row">
+                    <div class="slider-label">
+                        <span>Hue Rotation</span>
+                        <span class="slider-value" id="v-h">0°</span>
+                    </div>
+                    <input type="range" id="sl-h" min="-180" max="180" value="0">
+                </div>
+                
+                <div class="slider-row">
+                    <div class="slider-label">
+                        <span>Sharpness</span>
+                        <span class="slider-value" id="v-sh">0</span>
+                    </div>
+                    <input type="range" id="sl-sh" min="0" max="10" step="1" value="0">
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="modal-btn modal-btn-cancel" onclick="closeEditor()">Cancel</button>
+                    <button class="modal-btn modal-btn-apply" onclick="applyEdit()">Apply Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="brand">
+            <div class="brand-icon">
+                <img src="logo.png" alt="TP" onerror="this.style.display='none';">
+            </div>
+            <div class="brand-text">TextureToolbox</div>
+        </div>
+        
+        <div class="nav-center">
+            <button class="nav-tab active" data-mode="create">Create</button>
+            <button class="nav-tab" data-mode="convert">Convert</button>
+            <button class="nav-tab" data-mode="separate">Separate</button>
+        </div>
+
+        <div class="nav-right">
+            <button class="icon-btn" id="themeToggle" title="Toggle Theme">☀</button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        
+        <div class="panel">
+            <div class="panel-header">
+                <span>Configuration</span>
+                <span class="panel-badge">STEP 1</span>
+            </div>
+            <div class="panel-scroll">
+                
+                <div id="sourceConfig" class="d-none">
+                    <div class="config-group">
+                        <label>Source File</label>
+                        <div class="slot missing" id="sourceSlot">
+                            <div class="ch-badge bg-A">SRC</div>
+                            <div class="slot-info">
+                                <div class="slot-name" id="sourceName">No file selected</div>
+                                <div class="slot-meta">Click or drag to import</div>
+                            </div>
+                            <div class="import-visual">
+                                <span>📁</span>
+                                <span>Import</span>
+                            </div>
+                            <input type="file" class="import-trigger" id="sourceInput" accept="image/*">
+                        </div>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label>Source Format</label>
+                        <select id="sourceFormat"></select>
+                    </div>
+                    
+                    <div class="divider"></div>
+                </div>
+
+                <div id="targetConfig" class="config-group">
+                    <label>Output Format</label>
+                    <select id="targetFormat"></select>
+                </div>
+
+                <div style="margin-top: 32px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center;">
+                        <label id="slotTitle" style="margin: 0;">Required Channels</label>
+                        <span class="panel-badge">STEP 2</span>
+                    </div>
+                    <div class="slots-wrapper" id="slotsArea"></div>
+                </div>
+
+            </div>
+            <div class="action-area">
+                <button id="processBtn" class="btn-large" disabled>Generate Texture</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span>Preview & Export</span>
+                <span id="dimInfo" style="font-size: 0.8rem; color: var(--text-dim); font-weight: 500;">0 × 0</span>
+            </div>
+            
+            <div class="preview-wrapper" id="previewContainer">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎨</div>
+                    <div class="empty-state-text">Your texture will appear here</div>
+                </div>
+            </div>
+            
+            <div id="downloadSection" style="padding: 24px; background: var(--bg-elevated); border-top: 1px solid var(--border); display: none;">
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <div class="footer-left">
+            <span>Crafted by</span>
+            <span class="author">Abdessamad SAFHA</span>
+        </div>
+        <div class="footer-right">
+            <a href="mailto:6bdessamad@gmail.com" class="social-link" title="Email">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                Email
+            </a>
+            <a href="https://www.instagram.com/2bdessamad/" target="_blank" class="social-link" title="Instagram">
+                <svg viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>
+                Instagram
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // --- CONSTANTS ---
+        const FORMATS = {
+            'ORD': { label: 'ORD (AO, Rough, Disp)', ch: { R:'AO', G:'ROUGH', B:'DISP', A:'EMPTY' } },
+            'ORM': { label: 'ORM (AO, Rough, Metal)', ch: { R:'AO', G:'ROUGH', B:'METAL', A:'EMPTY' } },
+            'RMA': { label: 'RMA (Rough, Metal, AO)', ch: { R:'ROUGH', G:'METAL', B:'AO', A:'EMPTY' } },
+            'UNITY': { label: 'Unity HDRP (Mask Map)', ch: { R:'METAL', G:'AO', B:'DISP', A:'SMOOTH' } }
+        };
+        const NAMES = { 
+            AO: 'Ambient Occlusion', 
+            ROUGH: 'Roughness', 
+            METAL: 'Metallic', 
+            DISP: 'Displacement', 
+            SMOOTH: 'Smoothness', 
+            EMPTY: 'Empty' 
+        };
+        
+        const THEMES = {
+            create: '#d17756',
+            convert: '#d15698',
+            separate: '#6bafdf'
+        };
+
+        // --- STATE ---
+        let state = { 
+            mode: 'create', 
+            srcImg: null, 
+            srcFmt: 'ORM', 
+            tgtFmt: 'ORD', 
+            maps: { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null },
+            edited: {},
+            w: 0, 
+            h: 0, 
+            editMap: null 
+        };
+
+        const el = (id) => document.getElementById(id);
+
+        // --- INIT ---
+        function init() {
+            // Populate Selects
+            Object.keys(FORMATS).forEach(k => {
+                el('sourceFormat').add(new Option(FORMATS[k].label, k));
+                el('targetFormat').add(new Option(FORMATS[k].label, k));
+            });
+            el('targetFormat').value = 'ORD';
+
+            // Events
+            document.querySelectorAll('.nav-tab[data-mode]').forEach(b => b.onclick = (e) => setMode(e.target));
+            el('themeToggle').onclick = toggleTheme;
+            el('targetFormat').onchange = updateUI;
+            el('sourceFormat').onchange = () => { 
+                state.srcFmt = el('sourceFormat').value; 
+                if(state.srcImg) unpack(); 
+            };
+            el('sourceInput').onchange = (e) => loadSource(e.target.files[0]);
+            el('processBtn').onclick = process;
+            
+            // Slider Events
+            ['b','c','s','h','sh'].forEach(k => el('sl-'+k).oninput = updatePreviewEdit);
+
+            // Default Mode
+            setMode(document.querySelector('.nav-tab[data-mode="create"]'));
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            el('themeToggle').innerText = next === 'dark' ? '☀' : '☾';
+        }
+
+        function setMode(btn) {
+            document.querySelectorAll('.nav-tab[data-mode]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.mode = btn.dataset.mode;
+            
+            // Update Theme Color
+            const accentColor = THEMES[state.mode];
+            document.documentElement.style.setProperty('--accent', accentColor);
+            document.documentElement.style.setProperty('--accent-hover', lightenColor(accentColor, 10));
+            
+            // Reset State
+            state.maps = { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null };
+            state.edited = {};
+            state.srcImg = null;
+            el('sourceSlot').classList.remove('filled'); 
+            el('sourceSlot').classList.add('missing');
+            el('sourceName').innerText = "No file selected";
+            
+            // UI Toggle
+            const isMix = state.mode !== 'create';
+            el('sourceConfig').classList.toggle('d-none', !isMix);
+            el('targetConfig').classList.toggle('d-none', state.mode === 'separate');
+            
+            updateUI();
+        }
+
+        function lightenColor(hex, percent) {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.min(255, (num >> 16) + amt);
+            const G = Math.min(255, (num >> 8 & 0x00FF) + amt);
+            const B = Math.min(255, (num & 0x0000FF) + amt);
+            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+        }
+
+        function updateUI() {
+            const area = el('slotsArea'); 
+            area.innerHTML = '';
+            state.tgtFmt = el('targetFormat').value;
+            
+            el('slotTitle').innerText = state.mode === 'separate' ? "Found Channels" : "Required Channels";
+            el('processBtn').innerText = state.mode === 'separate' ? "Extract All Images" : "Generate Texture";
+
+            if(state.mode === 'separate') {
+                if(!state.srcImg) { 
+                    el('processBtn').disabled = true; 
+                    return; 
+                }
+                const fmt = FORMATS[state.srcFmt];
+                ['R','G','B','A'].forEach(c => renderSlot(c, fmt.ch[c], true, false));
+                el('processBtn').disabled = false;
+            } else {
+                const fmt = FORMATS[state.tgtFmt];
+                let ready = true;
+                ['R','G','B','A'].forEach(c => {
+                    const type = fmt.ch[c];
+                    if(type === 'EMPTY') return;
+                    
+                    let has = !!state.maps[type];
+                    if(!has && (type === 'SMOOTH' && state.maps['ROUGH'])) has = true;
+                    if(!has && (type === 'ROUGH' && state.maps['SMOOTH'])) has = true;
+                    
+                    renderSlot(c, type, has, true);
+                    if(!has) ready = false;
+                });
+                el('processBtn').disabled = !ready;
+            }
+        }
+
+        function renderSlot(ch, type, isFilled, allowUp) {
+            const div = document.createElement('div');
+            div.className = `slot ${isFilled ? 'filled' : 'missing'} ${state.edited[type] ? 'edited' : ''}`;
+            const canEdit = isFilled && state.maps[type];
+            
+            let status = isFilled ? "Ready" : "Missing";
+            if(state.mode === 'convert' && isFilled) status = "Extracted";
+            if(!state.maps[type] && isFilled) status = "Auto-calculated";
+
+            div.innerHTML = `
+                <div class="ch-badge bg-${ch}">${ch}</div>
+                <div class="slot-info">
+                    <div class="slot-name">${NAMES[type]}</div>
+                    <div class="slot-meta">
+                        ${status} 
+                        <span class="tag-edit">EDITED</span>
+                    </div>
+                </div>
+                <div class="slot-actions">
+                    ${canEdit ? `<button class="mini-btn" title="Edit texture" onclick="openEditor('${type}')">✎</button>` : ''}
+                    ${isFilled && allowUp ? `<button class="mini-btn" title="Replace" onclick="el('in-${ch}').click()">↻</button>` : ''}
+                </div>
+                ${allowUp && !isFilled ? `<div class="import-visual"><span>📁</span><span>Import</span></div>` : ''}
+                ${allowUp ? `<input type="file" id="in-${ch}" class="import-trigger" accept="image/*" onchange="loadMap('${type}',this)">` : ''}
+            `;
+            el('slotsArea').appendChild(div);
+        }
+
+        // --- FILE LOADING ---
+        function loadSource(file) {
+            if(!file) return;
+            el('sourceName').innerText = file.name;
+            const r = new FileReader();
+            r.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    state.w = img.width; 
+                    state.h = img.height; 
+                    state.srcImg = img;
+                    el('sourceSlot').classList.add('filled'); 
+                    el('sourceSlot').classList.remove('missing');
+                    unpack();
+                };
+                img.src = e.target.result;
+            };
+            r.readAsDataURL(file);
+        }
+
+        function loadMap(type, input) {
+            const file = input.files[0]; 
+            if(!file) return;
+            const r = new FileReader();
+            r.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    if(state.w === 0) { 
+                        state.w = img.width; 
+                        state.h = img.height; 
+                    }
+                    const c = document.createElement('canvas'); 
+                    c.width = state.w; 
+                    c.height = state.h;
+                    const ctx = c.getContext('2d'); 
+                    ctx.drawImage(img, 0, 0, state.w, state.h);
+                    state.maps[type] = extract(ctx.getImageData(0, 0, state.w, state.h), 0);
+                    state.edited[type] = false; 
+                    updateUI();
+                };
+                img.src = e.target.result;
+            };
+            r.readAsDataURL(file);
+        }
+
+        function unpack() {
+            const c = document.createElement('canvas'); 
+            c.width = state.w; 
+            c.height = state.h;
+            const ctx = c.getContext('2d'); 
+            ctx.drawImage(state.srcImg, 0, 0);
+            const d = ctx.getImageData(0, 0, state.w, state.h);
+            const fmt = FORMATS[state.srcFmt]; 
+            const idx = { R: 0, G: 1, B: 2, A: 3 };
+            state.maps = { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null };
+            state.edited = {};
+            ['R','G','B','A'].forEach(ch => {
+                const t = fmt.ch[ch]; 
+                if(t !== 'EMPTY') state.maps[t] = extract(d, idx[ch]);
+            });
+            updateUI();
+        }
+
+        function extract(idata, off) {
+            const len = idata.data.length / 4; 
+            const res = new Uint8ClampedArray(len);
+            for(let i = 0; i < len; i++) res[i] = idata.data[i * 4 + off];
+            return res;
+        }
+
+        // --- EDITOR ---
+        let editTmp = document.createElement('canvas');
+        
+        function openEditor(type) {
+            state.editMap = type;
+            const d = state.maps[type];
+            if(!d) return;
+            
+            const cvs = el('previewEditCanvas');
+            const sc = Math.min(1, 512 / state.w); 
+            cvs.width = state.w * sc; 
+            cvs.height = state.h * sc;
+            
+            editTmp.width = cvs.width; 
+            editTmp.height = cvs.height;
+            const ctx = editTmp.getContext('2d');
+            const idata = ctx.createImageData(cvs.width, cvs.height);
+            
+            for(let y = 0; y < cvs.height; y++) {
+                for(let x = 0; x < cvs.width; x++) {
+                    const val = d[Math.floor(y / sc) * state.w + Math.floor(x / sc)];
+                    const i = (y * cvs.width + x) * 4;
+                    idata.data[i] = val; 
+                    idata.data[i + 1] = val; 
+                    idata.data[i + 2] = val; 
+                    idata.data[i + 3] = 255;
+                }
+            }
+            ctx.putImageData(idata, 0, 0);
+            
+            ['b','c','s'].forEach(k => el('sl-' + k).value = 100);
+            ['h','sh'].forEach(k => el('sl-' + k).value = 0);
+            updatePreviewEdit();
+            el('editorModal').classList.add('active');
+        }
+        
+        function closeEditor() { 
+            el('editorModal').classList.remove('active'); 
+        }
+        
+        function updatePreviewEdit() {
+            const ctx = el('previewEditCanvas').getContext('2d');
+            const b = el('sl-b').value;
+            const c = el('sl-c').value;
+            const s = el('sl-s').value;
+            const h = el('sl-h').value;
+            
+            ['b','c','s'].forEach(k => el('v-' + k).innerText = el('sl-' + k).value + '%');
+            el('v-h').innerText = h + '°'; 
+            el('v-sh').innerText = el('sl-sh').value;
+            
+            ctx.filter = `brightness(${b}%) contrast(${c}%) hue-rotate(${h}deg) saturate(${s}%)`;
+            ctx.drawImage(editTmp, 0, 0);
+            ctx.filter = 'none';
+        }
+
+        function applyEdit() {
+            const w = state.w; 
+            const h = state.h;
+            const tempC = document.createElement('canvas'); 
+            tempC.width = w; 
+            tempC.height = h;
+            const ctx = tempC.getContext('2d');
+            
+            const d = state.maps[state.editMap];
+            const imgD = ctx.createImageData(w, h);
+            for(let i = 0; i < d.length; i++) {
+                imgD.data[i * 4] = d[i]; 
+                imgD.data[i * 4 + 1] = d[i]; 
+                imgD.data[i * 4 + 2] = d[i]; 
+                imgD.data[i * 4 + 3] = 255;
+            }
+            
+            const filterC = document.createElement('canvas'); 
+            filterC.width = w; 
+            filterC.height = h;
+            filterC.getContext('2d').putImageData(imgD, 0, 0);
+
+            const b = el('sl-b').value;
+            const c = el('sl-c').value;
+            const s = el('sl-s').value;
+            const hue = el('sl-h').value;
+            ctx.filter = `brightness(${b}%) contrast(${c}%) hue-rotate(${hue}deg) saturate(${s}%)`;
+            ctx.drawImage(filterC, 0, 0);
+            ctx.filter = 'none'; 
+
+            let final = ctx.getImageData(0, 0, w, h);
+            const sh = parseInt(el('sl-sh').value);
+            if(sh > 0) final = applySharpen(final, sh);
+
+            state.maps[state.editMap] = extract(final, 0);
+            state.edited[state.editMap] = true;
+            
+            closeEditor();
+            updateUI(); 
+        }
+
+        function applySharpen(pixels, amt) {
+            const w = pixels.width;
+            const h = pixels.height;
+            const s = pixels.data;
+            const d = new Uint8ClampedArray(s.length);
+            const m = amt * 0.2;
+            
+            for(let y = 0; y < h; y++) {
+                for(let x = 0; x < w; x++) {
+                    const i = (y * w + x) * 4;
+                    const c = s[i];
+                    const n = s[((y > 0 ? y - 1 : y) * w + x) * 4];
+                    const so = s[((y < h - 1 ? y + 1 : y) * w + x) * 4];
+                    const e = s[(y * w + (x < w - 1 ? x + 1 : x)) * 4];
+                    const we = s[(y * w + (x > 0 ? x - 1 : x)) * 4];
+                    const val = c + (4 * c - n - so - e - we) * m;
+                    d[i] = val; 
+                    d[i + 1] = val; 
+                    d[i + 2] = val; 
+                    d[i + 3] = 255;
+                }
+            }
+            return new ImageData(d, w, h);
+        }
+
+        // --- PROCESS ---
+        function process() {
+            const dlArea = el('downloadSection'); 
+            dlArea.style.display = 'block'; 
+            dlArea.innerHTML = '';
+            el('previewContainer').innerHTML = ''; 
+            el('dimInfo').innerText = `${state.w} × ${state.h}`;
+
+            if(state.mode === 'separate') {
+                const resultsDiv = document.createElement('div');
+                resultsDiv.className = 'results-grid';
+                el('previewContainer').appendChild(resultsDiv);
+                el('previewContainer').style.alignItems = "start";
+                el('previewContainer').style.justifyContent = "start";
+                el('previewContainer').style.overflowY = "auto";
+                
+                const fmt = FORMATS[state.srcFmt];
+                ['R','G','B','A'].forEach(ch => {
+                    const t = fmt.ch[ch]; 
+                    if(t === 'EMPTY') return;
+                    createResultCard(state.maps[t], `${NAMES[t]}.png`, resultsDiv, `${NAMES[t]} (${ch})`);
+                });
+            } else {
+                el('previewContainer').style.alignItems = "center";
+                el('previewContainer').style.justifyContent = "center";
+                el('previewContainer').style.overflowY = "hidden";
+                
+                const fmt = FORMATS[state.tgtFmt];
+                const final = new Uint8ClampedArray(state.w * state.h * 4);
+                
+                const getD = (t) => {
+                    if(t === 'EMPTY') return null;
+                    if(state.maps[t]) return state.maps[t];
+                    if(t === 'SMOOTH' && state.maps['ROUGH']) return state.maps['ROUGH'].map(v => 255 - v);
+                    if(t === 'ROUGH' && state.maps['SMOOTH']) return state.maps['SMOOTH'].map(v => 255 - v);
+                    return null;
+                };
+                
+                const r = getD(fmt.ch.R);
+                const g = getD(fmt.ch.G);
+                const b = getD(fmt.ch.B);
+                const a = getD(fmt.ch.A);
+                
+                for(let i = 0; i < state.w * state.h; i++) {
+                    final[i * 4] = r ? r[i] : 0; 
+                    final[i * 4 + 1] = g ? g[i] : 0; 
+                    final[i * 4 + 2] = b ? b[i] : 0; 
+                    final[i * 4 + 3] = a ? a[i] : 255;
+                }
+                
+                const cvs = document.createElement('canvas'); 
+                cvs.width = state.w; 
+                cvs.height = state.h;
+                cvs.getContext('2d').putImageData(new ImageData(final, state.w, state.h), 0, 0);
+                el('previewContainer').appendChild(cvs);
+                
+                const btn = document.createElement('button');
+                btn.className = 'btn-large';
+                btn.innerText = `Download ${state.tgtFmt} Texture`;
+                btn.onclick = () => download(cvs, `Texture_${state.tgtFmt}.png`);
+                dlArea.appendChild(btn);
+            }
+        }
+
+        function createResultCard(data, name, container, label) {
+            if(!data) return;
+            const cvs = document.createElement('canvas'); 
+            cvs.width = state.w; 
+            cvs.height = state.h;
+            const idata = new ImageData(state.w, state.h);
+            for(let i = 0; i < data.length; i++) {
+                idata.data[i * 4] = data[i]; 
+                idata.data[i * 4 + 1] = data[i]; 
+                idata.data[i * 4 + 2] = data[i]; 
+                idata.data[i * 4 + 3] = 255;
+            }
+            cvs.getContext('2d').putImageData(idata, 0, 0);
+            
+            const card = document.createElement('div');
+            card.className = 'result-item';
+            card.innerHTML = `
+                <div class="result-label">${label}</div>
+                <div class="result-thumb"></div>
+            `;
+            card.querySelector('.result-thumb').appendChild(cvs);
+            
+            const btn = document.createElement('a');
+            btn.className = 'dl-btn-small';
+            btn.innerText = 'Download';
+            btn.onclick = () => download(cvs, name);
+            card.appendChild(btn);
+            
+            container.appendChild(card);
+        }
+
+        function download(canvas, name) {
+            const l = document.createElement('a'); 
+            l.download = name; 
+            l.href = canvas.toDataURL('image/png'); 
+            l.click();
+        }
+
+        init();
+    </script>
+</body>
+</html>
