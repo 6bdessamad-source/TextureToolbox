@@ -2,60 +2,48 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Texture Toolbox Pro V9</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texture Toolbox Pro V10</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* --- THEME VARIABLES --- */
-            --bg-body: #0a0a0a;
-            --bg-card: #141414;
+            /* --- BASICS --- */
+            --bg-body: #050505;
+            --bg-card: #121212;
             --bg-input: #1a1a1a;
             --bg-hover: #252525;
-            --bg-elevated: #1f1f1f;
+            --bg-elevated: #1e1e1e;
             
             --border: #2a2a2a;
             --border-active: #404040;
-            --border-light: #333333;
             
             --text-main: #ffffff;
             --text-sec: #9ca3af;
             --text-dim: #6b7280;
             
-            /* BRAND COLORS */
-            --terracotta: #d17756;
-            --terracotta-hover: #e08b6a;
-            --terracotta-dim: rgba(209, 119, 86, 0.12);
-            --terracotta-glow: rgba(209, 119, 86, 0.25);
-            
-            --sky-blue: #6bafdf;
-            --sky-blue-hover: #82bfe6;
-            --sky-blue-dim: rgba(107, 175, 223, 0.12);
-            
-            --accent: var(--terracotta);
-            --accent-hover: var(--terracotta-hover);
-            --accent-dim: var(--terracotta-dim);
-            --accent-glow: var(--terracotta-glow);
+            /* --- MODES COLORS --- */
+            --col-create: #d17756;   /* Terracotta */
+            --col-convert: #c026d3;  /* Magenta */
+            --col-separate: #0ea5e9; /* Sky Blue */
+            --col-editor: #10b981;   /* Emerald */
+            --col-channels: #f59e0b; /* Amber */
+
+            /* Default Accent (Will change via JS) */
+            --accent: var(--col-create);
+            --accent-dim: rgba(209, 119, 86, 0.15);
             
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             
-            /* BADGE COLORS */
-            --badge-edit: #f59e0b;      /* Yellow/Orange */
-            --badge-invert: #3b82f6;    /* Blue */
-
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-            --shadow: 0 4px 20px rgba(0,0,0,0.4);
-            --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
+            --shadow: 0 8px 30px rgba(0,0,0,0.5);
             --radius: 12px;
-            --radius-sm: 8px;
-            --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-ui: 'Inter', sans-serif;
+            --nav-height: 70px;
             
-            --grid-color: rgba(255, 255, 255, 0.02);
-            --nav-height: 72px;
+            --grid-color: rgba(255, 255, 255, 0.03);
         }
 
         [data-theme="light"] {
@@ -66,628 +54,356 @@
             --bg-elevated: #ffffff;
             --border: #e2e8f0;
             --border-active: #cbd5e1;
-            --border-light: #f1f5f9;
             --text-main: #0f172a;
             --text-sec: #64748b;
             --text-dim: #94a3b8;
-            --terracotta-dim: rgba(209, 119, 86, 0.08);
-            --sky-blue-dim: rgba(107, 175, 223, 0.08);
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-            --shadow: 0 4px 15px rgba(0,0,0,0.08);
-            --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
-            --grid-color: rgba(0, 0, 0, 0.015);
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --grid-color: rgba(0, 0, 0, 0.03);
         }
 
-        * { 
-            box-sizing: border-box; 
-            outline: none; 
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; outline: none; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body {
             background-color: var(--bg-body);
-            background-image: radial-gradient(circle, var(--grid-color) 1px, transparent 1px);
+            /* Dot Grid Background */
+            background-image: radial-gradient(var(--grid-color) 1px, transparent 1px);
             background-size: 24px 24px;
             color: var(--text-main);
             font-family: var(--font-ui);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+            transition: background-color 0.3s;
         }
-
-        /* --- SCROLLBAR --- */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         /* --- HEADER --- */
         .navbar {
             background: var(--bg-card);
             border-bottom: 1px solid var(--border);
             padding: 0 1.5rem;
-            min-height: var(--nav-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            z-index: 100;
-            position: sticky;
-            top: 0;
-            backdrop-filter: blur(12px);
+            height: var(--nav-height);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0; z-index: 100;
         }
 
         .brand {
-            display: flex; 
-            align-items: center; 
-            gap: 12px;
-            font-weight: 800; 
-            font-size: 1.15rem; 
-            letter-spacing: -0.5px;
-            white-space: nowrap;
+            display: flex; align-items: center; gap: 12px;
+            font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px;
         }
         .brand-icon {
-            width: 36px; 
-            height: 36px;
-            background: linear-gradient(135deg, var(--terracotta) 0%, var(--sky-blue) 100%);
-            border-radius: 8px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            overflow: hidden;
+            width: 36px; height: 36px; background: var(--bg-input);
+            border: 1px solid var(--border); border-radius: 8px;
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
-        .brand-icon img {
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain;
-            display: block;
-        }
-        .brand-text { 
-            background: linear-gradient(135deg, var(--terracotta) 0%, var(--sky-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        .brand-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-text span { color: var(--accent); transition: color 0.3s; }
 
-        .nav-center { 
-            display: flex; 
-            gap: 4px; 
-            background: var(--bg-input); 
-            padding: 4px; 
-            border-radius: var(--radius); 
-            border: 1px solid var(--border);
+        .nav-center {
+            display: flex; gap: 4px; background: var(--bg-input);
+            padding: 4px; border-radius: 8px; border: 1px solid var(--border);
+            overflow-x: auto; max-width: 60vw;
         }
         .nav-tab {
-            padding: 8px 20px; 
-            border: none; 
-            background: transparent;
-            color: var(--text-sec); 
-            font-weight: 600; 
-            cursor: pointer; 
-            border-radius: 8px; 
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-            white-space: nowrap;
+            padding: 6px 16px; border: none; background: transparent;
+            color: var(--text-sec); font-weight: 600; cursor: pointer;
+            border-radius: 6px; font-size: 0.8rem; white-space: nowrap;
+            transition: all 0.2s;
         }
         .nav-tab:hover { color: var(--text-main); background: var(--bg-hover); }
-        .nav-tab.active { 
-            background: var(--bg-card); 
-            color: var(--accent); 
-            box-shadow: var(--shadow-sm);
-        }
+        .nav-tab.active { background: var(--bg-card); color: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-        .nav-right { display: flex; gap: 10px; align-items: center; }
+        .nav-right { display: flex; gap: 10px; }
         .icon-btn {
-            width: 38px; height: 38px;
-            border-radius: 8px;
-            background: var(--bg-input); 
-            border: 1px solid var(--border);
-            color: var(--text-sec); 
-            cursor: pointer; 
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
-            font-size: 1.1rem;
+            width: 36px; height: 36px; border-radius: 8px;
+            background: var(--bg-input); border: 1px solid var(--border);
+            color: var(--text-sec); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; transition: all 0.2s;
         }
-        .icon-btn:hover { 
-            border-color: var(--accent); 
-            color: var(--accent);
-            background: var(--bg-hover);
-        }
-
-        /* --- DESCRIPTION --- */
-        .description-bar {
-            background: var(--bg-elevated);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 1.5rem;
-            text-align: center;
-            color: var(--text-sec);
-            font-size: 0.8rem;
-            line-height: 1.4;
-        }
-        .description-highlight {
-            background: linear-gradient(135deg, var(--terracotta) 0%, var(--sky-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 700;
-        }
+        .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
 
         /* --- MAIN LAYOUT --- */
         .main-container {
-            display: grid;
-            grid-template-columns: 420px 1fr;
-            gap: 24px;
-            padding: 24px;
-            flex: 1;
-            max-width: 1920px;
-            margin: 0 auto;
-            width: 100%;
-            height: calc(100vh - var(--nav-height) - 45px);
+            display: grid; grid-template-columns: 400px 1fr; gap: 24px;
+            padding: 24px; flex: 1; max-width: 1800px; margin: 0 auto;
+            width: 100%; overflow: hidden;
         }
 
         .panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            height: 100%;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); display: flex; flex-direction: column;
+            overflow: hidden; box-shadow: var(--shadow); position: relative;
         }
 
         .panel-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            font-weight: 700;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-elevated);
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+            font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-elevated); color: var(--text-sec);
         }
-        .panel-badge { 
-            font-size: 0.65rem; 
-            background: var(--accent-dim); 
-            padding: 3px 8px; 
-            border-radius: 6px; 
-            color: var(--accent); 
-            font-weight: 800; 
-            letter-spacing: 0.5px;
+        .panel-badge {
+            font-size: 0.65rem; background: var(--accent-dim); padding: 2px 8px;
+            border-radius: 4px; color: var(--accent); border: 1px solid var(--accent);
         }
 
-        .panel-scroll {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
+        .panel-scroll { padding: 20px; overflow-y: auto; flex: 1; }
 
-        /* --- CONFIG FORM --- */
+        /* --- CONTROLS --- */
         .config-group { margin-bottom: 20px; }
-        label { 
-            display: block; font-size: 0.7rem; font-weight: 700; 
-            color: var(--text-dim); margin-bottom: 8px; 
-            text-transform: uppercase; letter-spacing: 0.8px;
+        label {
+            display: block; font-size: 0.75rem; font-weight: 700;
+            color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase;
         }
         select {
-            width: 100%; padding: 12px;
-            background: var(--bg-input); border: 1px solid var(--border);
-            color: var(--text-main); border-radius: 10px; cursor: pointer;
-            font-size: 0.9rem; font-weight: 500; appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px top 50%;
-            background-size: 10px auto;
+            width: 100%; padding: 12px; background: var(--bg-input);
+            border: 1px solid var(--border); color: var(--text-main);
+            border-radius: 8px; cursor: pointer; font-size: 0.9rem; appearance: none;
         }
+        select:focus { border-color: var(--accent); }
 
-        /* --- SLOTS --- */
+        /* --- SLOTS & UPLOADS --- */
         .slots-wrapper { display: flex; flex-direction: column; gap: 10px; }
         
         .slot {
-            position: relative;
-            background: var(--bg-input);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex; align-items: center; gap: 12px;
-            transition: all 0.2s ease;
+            position: relative; background: var(--bg-input);
+            border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+            display: flex; align-items: center; gap: 12px; transition: all 0.2s;
         }
         .slot:hover { border-color: var(--border-active); background: var(--bg-hover); }
-        .slot.filled { 
-            background: var(--bg-card); 
-            border-left: 4px solid var(--success);
-            border-color: var(--success);
-        }
-        .slot.missing { 
-            border-left: 4px solid var(--warning);
-            border-style: dashed;
-            background: transparent; 
-        }
+        .slot.filled { background: var(--bg-card); border-left: 4px solid var(--success); }
+        .slot.missing { border-left: 4px dashed var(--warning); opacity: 0.9; }
 
         .ch-badge {
-            width: 32px; height: 32px;
-            border-radius: 8px;
+            width: 32px; height: 32px; border-radius: 6px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 0.8rem; color: #fff;
-            flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-weight: 800; font-size: 0.8rem; color: #fff; flex-shrink: 0;
         }
-        .bg-R { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-        .bg-G { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        .bg-B { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-        .bg-A { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+        .bg-R { background: #ef4444; } .bg-G { background: #10b981; }
+        .bg-B { background: #3b82f6; } .bg-A { background: #6b7280; }
+        .bg-M { background: #c026d3; } /* Magenta for Mix */
 
-        .slot-info { flex: 1; pointer-events: none; }
-        .slot-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; color: var(--text-main); }
-        .slot-meta { font-size: 0.7rem; color: var(--text-sec); display: flex; gap: 6px; align-items: center; flex-wrap: wrap;}
+        .slot-info { flex: 1; pointer-events: none; min-width: 0; }
+        .slot-name { font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
+        .slot-meta { font-size: 0.7rem; color: var(--text-dim); display: flex; gap: 6px; align-items: center; }
         
-        /* STATUS TAGS */
-        .status-tag { 
-            font-weight: 700; 
-            font-size: 0.65rem; 
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .tag-edit { color: var(--badge-edit); }
-        .tag-invert { color: var(--badge-invert); }
-        
-        .status-tag::before {
-            content: '●';
-            font-size: 0.6rem;
-        }
+        /* Indicators */
+        .tag { font-size: 0.6rem; font-weight: 700; padding: 1px 4px; border-radius: 3px; }
+        .tag-edit { color: var(--warning); background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); }
 
-        /* Import Overlay */
-        .import-trigger {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; cursor: pointer; z-index: 1;
-        }
+        /* Upload Overlay */
+        .file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 1; }
         .import-visual {
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            display: flex; align-items: center; gap: 6px;
-            background: var(--bg-card); border: 1px solid var(--accent);
-            color: var(--accent); padding: 4px 10px; border-radius: 6px;
-            font-size: 0.7rem; font-weight: 600; pointer-events: none;
-            opacity: 0; transition: opacity 0.2s;
+            display: flex; align-items: center; gap: 6px; pointer-events: none;
+            color: var(--text-dim); font-size: 0.75rem; font-weight: 600;
         }
-        .slot:hover .import-visual { opacity: 1; }
+        .slot:hover .import-visual { color: var(--accent); }
         .slot.filled .import-visual { display: none; }
-        
-        @media (hover: none) {
-            .import-visual { opacity: 1; background: transparent; border: none; right: 8px;}
-        }
 
-        .slot-actions { display: flex; gap: 4px; z-index: 3; }
+        /* Actions */
+        .slot-actions { display: flex; gap: 4px; z-index: 2; }
         .mini-btn {
-            width: 32px; height: 32px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--bg-input); color: var(--text-sec);
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s; font-size: 0.9rem;
+            width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+            background: var(--bg-input); color: var(--text-sec); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
         }
-        .mini-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+        .mini-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--bg-elevated); }
 
-        /* --- PREVIEW & ACTIONS --- */
-        .action-area { 
-            padding: 20px; background: var(--bg-elevated); 
-            border-top: 1px solid var(--border); 
-        }
-        .btn-large {
-            width: 100%; padding: 14px; border: none; border-radius: 12px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
-            color: #fff; font-weight: 700; font-size: 0.95rem;
-            cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2); transition: all 0.3s;
-        }
-        .btn-large:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
-        .btn-large:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-input); color: var(--text-dim); box-shadow: none; transform: none; }
-
+        /* --- PREVIEW --- */
         .preview-wrapper {
-            flex: 1; display: flex; flex-direction: column; 
-            height: 100%; min-height: 300px;
-            background-color: var(--bg-input);
-            background-image: linear-gradient(45deg, var(--border) 25%, transparent 25%), linear-gradient(-45deg, var(--border) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--border) 75%), linear-gradient(-45deg, transparent 75%, var(--border) 75%);
+            flex: 1; display: flex; flex-direction: column; background-color: var(--bg-input);
+            background-image: 
+                linear-gradient(45deg, var(--border) 25%, transparent 25%), 
+                linear-gradient(-45deg, var(--border) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, var(--border) 75%), 
+                linear-gradient(-45deg, transparent 75%, var(--border) 75%);
             background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            align-items: center; justify-content: center;
-            padding: 20px; overflow: hidden;
+            align-items: center; justify-content: center; padding: 20px; overflow: hidden;
         }
-        
-        canvas { 
-            max-width: 100%; max-height: 100%; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4); 
-            border-radius: 8px; border: 1px solid var(--border-light); 
-            object-fit: contain;
-        }
+        canvas { max-width: 100%; max-height: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 8px; object-fit: contain; }
 
         .empty-state { text-align: center; color: var(--text-dim); opacity: 0.5; }
-        .empty-state-icon { font-size: 3rem; margin-bottom: 12px; filter: grayscale(100%); }
+        .empty-icon { font-size: 3rem; margin-bottom: 10px; }
 
+        /* --- RESULTS GRID --- */
         .results-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px; width: 100%;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px; width: 100%; padding: 15px; background: var(--bg-elevated);
+            border-top: 1px solid var(--border); max-height: 250px; overflow-y: auto;
         }
-        .result-item {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px;
+        .result-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+            padding: 8px; display: flex; flex-direction: column; gap: 8px;
         }
-        .result-label { font-size: 0.75rem; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .result-thumb {
-            aspect-ratio: 1; background: #000; border-radius: 6px; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid var(--border);
+            aspect-ratio: 1; background: #000; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
-        .result-thumb canvas { width: 100%; height: 100%; object-fit: contain; box-shadow: none; border: none; }
-        .dl-btn-small {
-            width: 100%; padding: 8px; background: var(--bg-input); border: 1px solid var(--border);
-            border-radius: 6px; color: var(--text-main); font-size: 0.75rem; cursor: pointer;
-            text-align: center; font-weight: 600; text-decoration: none;
+        .result-thumb canvas { width: 100%; height: 100%; box-shadow: none; border: none; }
+        .dl-btn {
+            width: 100%; padding: 6px; background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 4px; color: var(--text-main); font-size: 0.7rem; cursor: pointer;
+            text-align: center; text-decoration: none; font-weight: 600;
         }
-        .dl-btn-small:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .dl-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px); z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box {
-            background: var(--bg-card); width: 90%; max-width: 480px;
-            border-radius: 16px; border: 1px solid var(--border);
-            display: flex; flex-direction: column; box-shadow: var(--shadow-lg);
-            max-height: 90vh;
-        }
-        .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 700; background: var(--bg-elevated); }
-        .modal-content { padding: 20px; overflow-y: auto; }
-        .preview-edit-container {
-            height: 180px; background: #000; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden;
-        }
-        .slider-row { margin-bottom: 16px; }
-        .slider-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-sec); margin-bottom: 8px; font-weight: 600; }
-        .slider-value { color: var(--accent); }
-        input[type=range] {
-            width: 100%; -webkit-appearance: none; background: var(--bg-input);
-            height: 6px; border-radius: 3px; border: 1px solid var(--border);
-        }
+        /* --- EDITOR CONTROLS (SIDEBAR) --- */
+        .editor-controls { display: none; margin-top: 20px; }
+        .slider-row { margin-bottom: 12px; }
+        .slider-head { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-sec); margin-bottom: 4px; }
+        input[type=range] { width: 100%; -webkit-appearance: none; background: var(--bg-input); height: 4px; border-radius: 2px; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 22px; height: 22px; /* Bigger touch target */
-            background: var(--accent); border-radius: 50%; cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 2px solid var(--bg-card);
+            -webkit-appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer;
         }
-        .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
-        .modal-btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 1px solid transparent; }
-        .modal-btn-cancel { background: var(--bg-input); border-color: var(--border); color: var(--text-main); }
-        .modal-btn-apply { background: var(--accent); color: #fff; }
-        /* NEW: Reset Button Style */
-        .modal-btn-reset { background: transparent; color: var(--danger); font-size: 0.85rem; padding: 10px 0; text-decoration: underline; }
-        .modal-btn-reset:hover { color: #f87171; }
+
+        /* --- MAIN ACTION --- */
+        .action-area { padding: 20px; background: var(--bg-elevated); border-top: 1px solid var(--border); }
+        .btn-large {
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            background: var(--accent); color: #fff; font-weight: 700; font-size: 0.95rem;
+            cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.2s;
+        }
+        .btn-large:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-large:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-input); color: var(--text-sec); box-shadow: none; transform: none; }
 
         /* --- FOOTER --- */
         .footer {
-            background: var(--bg-card); border-top: 1px solid var(--border);
-            padding: 20px 24px; display: flex; justify-content: space-between;
-            align-items: center; font-size: 0.8rem; color: var(--text-sec);
-            margin-top: auto;
+            background: var(--bg-card); border-top: 1px solid var(--border); padding: 15px 24px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-sec);
         }
-        .social-link { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 6px; transition: color 0.2s; }
-        .social-link:hover { color: var(--accent); background: var(--bg-hover); }
+        .author { color: var(--accent); font-weight: 700; text-decoration: none; }
+        .social-link { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+        .social-link:hover { color: var(--text-main); }
         .social-link svg { width: 16px; height: 16px; fill: currentColor; }
 
-        .divider { height: 1px; background: var(--border); margin: 20px 0; }
         .d-none { display: none !important; }
+        
+        /* Modal for specific edits */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--bg-card); width: 400px; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
 
-        /* --- RESPONSIVE MEDIA QUERIES --- */
-        @media (max-width: 1024px) {
-            .main-container {
-                display: flex;
-                flex-direction: column;
-                height: auto;
-                gap: 16px;
-                padding: 16px;
-            }
-            .panel { height: auto; min-height: 0; }
-            .preview-wrapper { min-height: 400px; aspect-ratio: 1/1; }
-            .navbar { padding: 0 1rem; }
-        }
-
-        @media (max-width: 640px) {
-            .navbar {
-                flex-wrap: wrap;
-                height: auto;
-                padding: 12px 16px;
-                gap: 12px;
-            }
-            .brand { order: 1; font-size: 1rem; }
-            .nav-right { order: 2; margin-left: auto; }
-            .nav-center { 
-                order: 3; width: 100%; 
-                overflow-x: auto; 
-                justify-content: flex-start;
-                padding-bottom: 4px;
-            }
-            .nav-tab { flex: 1; text-align: center; font-size: 0.8rem; padding: 10px; }
-            
-            .main-container { padding: 12px; }
-            .preview-wrapper { min-height: 300px; padding: 10px; }
-            
-            .footer { flex-direction: column; gap: 12px; text-align: center; }
-            .footer-right { display: flex; gap: 16px; }
-
-            .modal-box { width: 95%; max-height: 85vh; }
-            .slot-name { font-size: 0.8rem; }
-            .slot-meta { font-size: 0.65rem; }
+        @media (max-width: 900px) {
+            .main-container { grid-template-columns: 1fr; padding: 10px; height: auto; overflow: visible;}
+            .panel { height: auto; min-height: 400px; }
+            .nav-tabs { display: none; /* Hide on mobile, maybe add burger later */ }
         }
     </style>
 </head>
 <body>
 
-    <div class="modal-overlay" id="editorModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <span>Texture Editor</span>
-                <button class="mini-btn" onclick="closeEditor()">✕</button>
-            </div>
-            <div class="modal-content">
-                <div class="preview-edit-container">
-                    <canvas id="previewEditCanvas"></canvas>
-                </div>
-                
-                <div class="slider-row">
-                    <div class="slider-label"><span>Brightness</span><span class="slider-value" id="v-b">100%</span></div>
-                    <input type="range" id="sl-b" min="0" max="200" value="100">
-                </div>
-                <div class="slider-row">
-                    <div class="slider-label"><span>Contrast</span><span class="slider-value" id="v-c">100%</span></div>
-                    <input type="range" id="sl-c" min="0" max="200" value="100">
-                </div>
-                <div class="slider-row">
-                    <div class="slider-label"><span>Saturation</span><span class="slider-value" id="v-s">100%</span></div>
-                    <input type="range" id="sl-s" min="0" max="200" value="100">
-                </div>
-                <div class="slider-row">
-                    <div class="slider-label"><span>Hue</span><span class="slider-value" id="v-h">0°</span></div>
-                    <input type="range" id="sl-h" min="-180" max="180" value="0">
-                </div>
-                <div class="slider-row">
-                    <div class="slider-label"><span>Sharpness</span><span class="slider-value" id="v-sh">0</span></div>
-                    <input type="range" id="sl-sh" min="0" max="10" step="1" value="0">
-                </div>
-                <div class="slider-row">
-                    <div class="slider-label"><span>Threshold</span><span class="slider-value" id="v-th">0</span></div>
-                    <input type="range" id="sl-th" min="0" max="255" value="0">
-                </div>
-                
-                <div class="modal-actions">
-                    <button class="modal-btn modal-btn-reset" onclick="resetEditor()">Reset to Original</button>
-                    <div style="display:flex; gap:10px;">
-                        <button class="modal-btn modal-btn-cancel" onclick="closeEditor()">Cancel</button>
-                        <button class="modal-btn modal-btn-apply" onclick="applyEdit()">Apply</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <nav class="navbar">
         <div class="brand">
             <div class="brand-icon">
-                <img src="logo.png" alt="TP" onerror="this.style.display='none';">
+                <img src="logo.png" alt="TP" onerror="this.style.display='none'">
             </div>
-            <div class="brand-text">TextureToolbox</div>
+            <div class="brand-text">Texture<span>Toolbox</span></div>
         </div>
         
         <div class="nav-center">
-            <button class="nav-tab active" data-mode="create">Create</button>
-            <button class="nav-tab" data-mode="convert">Convert</button>
-            <button class="nav-tab" data-mode="separate">Separate</button>
+            <button class="nav-tab active" onclick="setMode('create')">Create</button>
+            <button class="nav-tab" onclick="setMode('convert')">Convert</button>
+            <button class="nav-tab" onclick="setMode('separate')">Separate</button>
+            <button class="nav-tab" onclick="setMode('editor')">Editor</button>
+            <button class="nav-tab" onclick="setMode('channels')">Channels</button>
         </div>
 
         <div class="nav-right">
-            <button class="icon-btn" id="themeToggle" title="Toggle Theme">☀</button>
+            <button class="icon-btn" onclick="toggleTheme()">☀</button>
         </div>
     </nav>
-
-    <div class="description-bar">
-        <strong>Texture Toolbox Pro</strong> — 
-        <span class="description-highlight">Create, Convert & Separate</span> 
-        maps (ORM, Unity HDRP)
-    </div>
 
     <div class="main-container">
         
         <div class="panel">
             <div class="panel-header">
-                <span>Configuration</span>
-                <span class="panel-badge">STEP 1</span>
+                <span id="panelTitle">Configuration</span>
+                <span class="panel-badge" id="modeBadge">CREATE</span>
             </div>
             <div class="panel-scroll">
                 
-                <div id="sourceConfig" class="d-none">
-                    <div class="config-group">
-                        <label>Source File</label>
-                        <div class="slot missing" id="sourceSlot">
-                            <div class="ch-badge bg-A">SRC</div>
-                            <div class="slot-info">
-                                <div class="slot-name" id="sourceName">Select Image</div>
-                                <div class="slot-meta">Click to import</div>
-                            </div>
-                            <div class="import-visual"><span>📁</span><span>Import</span></div>
-                            <input type="file" class="import-trigger" id="sourceInput" accept="image/*">
+                <div id="sourceConfig" class="d-none config-group">
+                    <label>Source File</label>
+                    <div class="slot missing" id="sourceSlot">
+                        <div class="ch-badge bg-M">SRC</div>
+                        <div class="slot-info">
+                            <div class="slot-name" id="sourceName">Select Image</div>
+                            <div class="slot-meta">Drag & Drop or Click</div>
                         </div>
+                        <input type="file" class="file-input" id="sourceInput" accept="image/*">
                     </div>
                     
-                    <div class="config-group">
+                    <div id="srcFormatGroup" style="margin-top:12px;">
                         <label>Source Format</label>
                         <select id="sourceFormat"></select>
                     </div>
-                    <div class="divider"></div>
                 </div>
 
-                <div id="targetConfig" class="config-group">
-                    <label>Output Format</label>
-                    <select id="targetFormat"></select>
-                </div>
-
-                <div class="config-group">
-                    <label>Export Format</label>
-                    <select id="exportFormat">
-                        <option value="png" selected>Png</option>
-                        <option value="jpg">Jpg</option>
-                        <option value="bmp">BMP</option>
-                        <option value="webp">WebP</option>
-                        <option value="bc7">BC7</option>
-                        <option value="bc1">BC1 / BC3</option>
-                        <option value="astc">ASTC</option>
-                        <option value="bc6h">Bc6h</option>
+                <div id="channelsConfig" class="d-none config-group">
+                    <label>Operation</label>
+                    <select id="channelOp" onchange="updateUI()">
+                        <option value="merge">Merge Channels (Builder)</option>
+                        <option value="split">Split Channels (Extractor)</option>
                     </select>
                 </div>
 
-                <div style="margin-top: 24px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
-                        <label id="slotTitle" style="margin: 0;">Channels</label>
-                        <span class="panel-badge">STEP 2</span>
+                <div id="targetConfig" class="config-group">
+                    <label>Output Preset</label>
+                    <select id="targetFormat"></select>
+                </div>
+
+                <div id="editorControls" class="editor-controls">
+                    <div class="slider-row"><div class="slider-head"><span>Brightness</span><span id="v-b">100%</span></div><input type="range" id="sl-b" min="0" max="200" value="100"></div>
+                    <div class="slider-row"><div class="slider-head"><span>Contrast</span><span id="v-c">100%</span></div><input type="range" id="sl-c" min="0" max="200" value="100"></div>
+                    <div class="slider-row"><div class="slider-head"><span>Saturation</span><span id="v-s">100%</span></div><input type="range" id="sl-s" min="0" max="200" value="100"></div>
+                    <div class="slider-row"><div class="slider-head"><span>Hue</span><span id="v-h">0°</span></div><input type="range" id="sl-h" min="-180" max="180" value="0"></div>
+                    <div class="slider-row"><div class="slider-head"><span>Sharpness</span><span id="v-sh">0</span></div><input type="range" id="sl-sh" min="0" max="10" step="1" value="0"></div>
+                    <div class="slider-row"><div class="slider-head"><span>Threshold</span><span id="v-th">0</span></div><input type="range" id="sl-th" min="0" max="255" value="0"></div>
+                    <button class="mini-btn" style="width:100%; margin-top:10px;" onclick="applyRealtimeEdit()">Apply & Render</button>
+                </div>
+
+                <div id="slotsSection" style="margin-top:20px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <label id="slotTitle">Channels</label>
                     </div>
                     <div class="slots-wrapper" id="slotsArea"></div>
                 </div>
 
             </div>
             <div class="action-area">
-                <button id="processBtn" class="btn-large" disabled>Generate</button>
+                <div class="config-group" style="margin-bottom:10px;">
+                    <label>Export As</label>
+                    <select id="exportType" style="padding:8px;">
+                        <option value="png">PNG (Lossless)</option>
+                        <option value="jpg">JPG (Compact)</option>
+                        <option value="webp">WebP (Modern)</option>
+                    </select>
+                </div>
+                <button id="processBtn" class="btn-large" disabled>Process</button>
             </div>
         </div>
 
         <div class="panel">
             <div class="panel-header">
-                <span>Preview</span>
-                <span id="dimInfo" style="font-size: 0.75rem; color: var(--text-dim);">0 × 0</span>
+                <span>Viewport</span>
+                <span id="dimInfo" style="color:var(--text-dim); font-weight:400;">0 × 0</span>
             </div>
             
             <div class="preview-wrapper" id="previewContainer">
                 <div class="empty-state">
-                    <div class="empty-state-icon">🎨</div>
-                    <div class="empty-state-text">Output Preview</div>
+                    <div class="empty-icon">🖼</div>
+                    <div>Preview Output</div>
                 </div>
             </div>
             
-            <div id="downloadSection" style="padding: 20px; background: var(--bg-elevated); border-top: 1px solid var(--border); display: none;">
-            </div>
+            <div id="resultsGrid" class="results-grid" style="display:none;"></div>
         </div>
 
     </div>
 
     <footer class="footer">
-        <div style="font-size: 0.75rem; opacity: 0.5;">
-            Crafted by Abdessamad SAFHA
-        </div>
-        
-        <div class="footer-right">
+        <div>Designed by <span class="author">Abdessamad SAFHA</span></div>
+        <div style="display:flex; gap:20px;">
             <a href="mailto:6bdessamad@gmail.com" class="social-link">
                 <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                 Email
@@ -700,46 +416,37 @@
     </footer>
 
     <script>
-        // --- CONSTANTS ---
+        // --- CONFIG ---
+        const MODES = {
+            create: { col: '--col-create', name: 'Create', badge: 'PACKER' },
+            convert: { col: '--col-convert', name: 'Convert', badge: 'UNPACKER' },
+            separate: { col: '--col-separate', name: 'Separate', badge: 'SPLITTER' },
+            editor: { col: '--col-editor', name: 'Editor', badge: 'STUDIO' },
+            channels: { col: '--col-channels', name: 'Channels', badge: 'MIXER' }
+        };
+
         const FORMATS = {
             'ORD': { label: 'ORD (AO, Rough, Disp)', ch: { R:'AO', G:'ROUGH', B:'DISP', A:'EMPTY' } },
             'ORM': { label: 'ORM (AO, Rough, Metal)', ch: { R:'AO', G:'ROUGH', B:'METAL', A:'EMPTY' } },
             'RMA': { label: 'RMA (Rough, Metal, AO)', ch: { R:'ROUGH', G:'METAL', B:'AO', A:'EMPTY' } },
             'UNITY': { label: 'Unity HDRP', ch: { R:'METAL', G:'AO', B:'DISP', A:'SMOOTH' } }
         };
-        const NAMES = { 
-            AO: 'Amb. Occlusion', 
-            ROUGH: 'Roughness', 
-            METAL: 'Metallic', 
-            DISP: 'Displacement', 
-            SMOOTH: 'Smoothness', 
-            EMPTY: 'Empty' 
-        };
-        
-        const THEMES = {
-            create: '#d17756',
-            convert: '#d15698',
-            separate: '#6bafdf'
-        };
+        const NAMES = { AO:'Ambient Occlusion', ROUGH:'Roughness', METAL:'Metallic', DISP:'Displacement', SMOOTH:'Smoothness', EMPTY:'Empty' };
 
         // --- STATE ---
-        let state = { 
-            mode: 'create', 
-            srcImg: null, 
-            srcFmt: 'ORM', 
-            tgtFmt: 'ORD',
-            exportType: 'png',
-            maps: { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null },
-            originals: {}, // Stores absolute original data before edits
-            mods: {},      // { edited: bool, inverted: bool }
-            editSettings: {}, // Stores saved slider values { b, c, s, h, sh, th } per channel
-            w: 0, 
-            h: 0, 
-            editMap: null 
+        let state = {
+            mode: 'create',
+            srcImg: null, // Image object
+            srcOriginalData: null, // Uint8ClampedArray of Source
+            w: 0, h: 0,
+            maps: { AO:null, ROUGH:null, METAL:null, DISP:null, SMOOTH:null }, // For Create/Convert
+            rawChannels: { R:null, G:null, B:null, A:null }, // For Channels Mode
+            editData: null // For Editor Mode
         };
 
+        // --- DOM ---
         const el = (id) => document.getElementById(id);
-        
+
         // --- INIT ---
         function init() {
             Object.keys(FORMATS).forEach(k => {
@@ -748,208 +455,203 @@
             });
             el('targetFormat').value = 'ORD';
 
-            document.querySelectorAll('.nav-tab[data-mode]').forEach(b => b.onclick = (e) => setMode(e.target));
-            el('themeToggle').onclick = toggleTheme;
-            el('targetFormat').onchange = updateUI;
-            el('sourceFormat').onchange = () => { 
-                state.srcFmt = el('sourceFormat').value; 
-                if(state.srcImg) unpack(); 
-            };
-            el('exportFormat').onchange = () => {
-                state.exportType = el('exportFormat').value;
-                if(!el('processBtn').disabled) process(); 
-            };
-
+            // Inputs
             el('sourceInput').onchange = (e) => loadSource(e.target.files[0]);
             el('processBtn').onclick = process;
+            el('targetFormat').onchange = updateUI;
+            el('sourceFormat').onchange = () => { if(state.srcImg) unpack(); };
             
-            // Add listeners for editor sliders
-            ['b','c','s','h','sh','th'].forEach(k => el('sl-'+k).oninput = updatePreviewEdit);
+            // Sliders (Editor)
+            ['b','c','s','h','sh','th'].forEach(k => el('sl-'+k).oninput = updateEditorPreview);
 
-            setMode(document.querySelector('.nav-tab[data-mode="create"]'));
-            window.addEventListener('resize', () => {});
+            setMode('create');
         }
 
+        // --- CORE UI ---
         function toggleTheme() {
-            const html = document.documentElement;
-            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            el('themeToggle').innerText = next === 'dark' ? '☀' : '☾';
+            const h = document.documentElement;
+            h.setAttribute('data-theme', h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
-        function setMode(btn) {
-            document.querySelectorAll('.nav-tab[data-mode]').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.mode = btn.dataset.mode;
+        function setMode(mode) {
+            state.mode = mode;
+            // Update UI Colors
+            document.documentElement.style.setProperty('--accent', `var(${MODES[mode].col})`);
             
-            const accentColor = THEMES[state.mode];
-            document.documentElement.style.setProperty('--accent', accentColor);
-            document.documentElement.style.setProperty('--accent-hover', lightenColor(accentColor, 10));
+            // Update Tabs
+            document.querySelectorAll('.nav-tab').forEach(b => {
+                b.classList.toggle('active', b.innerText === MODES[mode].name);
+            });
             
-            state.maps = { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null };
-            state.originals = {};
-            state.mods = {};
-            state.editSettings = {};
-            state.srcImg = null;
-            el('sourceSlot').classList.remove('filled'); 
-            el('sourceSlot').classList.add('missing');
-            el('sourceName').innerText = "Select Image";
+            // Update Headers
+            el('modeBadge').innerText = MODES[mode].badge;
+            el('modeBadge').style.color = `var(${MODES[mode].col})`;
+            el('modeBadge').style.borderColor = `var(${MODES[mode].col})`;
+
+            // Reset State
+            resetState();
             
-            const isMix = state.mode !== 'create';
-            el('sourceConfig').classList.toggle('d-none', !isMix);
-            el('targetConfig').classList.toggle('d-none', state.mode === 'separate');
+            // Visibility Logic
+            const showSrc = ['convert', 'separate', 'editor'].includes(mode) || (mode === 'channels' && el('channelOp').value === 'split');
+            const showTgt = ['create', 'convert'].includes(mode);
+            const showSlots = ['create', 'convert', 'separate', 'channels'].includes(mode);
+            const showEditor = mode === 'editor';
+            const showChConfig = mode === 'channels';
+
+            el('sourceConfig').classList.toggle('d-none', !showSrc);
+            el('srcFormatGroup').style.display = (mode === 'convert' || mode === 'separate') ? 'block' : 'none';
+            el('targetConfig').classList.toggle('d-none', !showTgt);
+            el('slotsSection').classList.toggle('d-none', !showSlots);
+            el('editorControls').style.display = showEditor ? 'block' : 'none';
+            el('channelsConfig').classList.toggle('d-none', !showChConfig);
+            
+            el('processBtn').innerText = getBtnText();
+            el('processBtn').disabled = true;
             
             updateUI();
         }
 
-        function lightenColor(hex, percent) {
-            const num = parseInt(hex.replace('#', ''), 16);
-            const amt = Math.round(2.55 * percent);
-            const R = Math.min(255, (num >> 16) + amt);
-            const G = Math.min(255, (num >> 8 & 0x00FF) + amt);
-            const B = Math.min(255, (num & 0x0000FF) + amt);
-            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+        function getBtnText() {
+            if(state.mode === 'separate' || (state.mode === 'channels' && el('channelOp').value === 'split')) return "Extract All";
+            if(state.mode === 'editor') return "Export Edited Image";
+            return "Generate Texture";
         }
 
+        function resetState() {
+            state.srcImg = null; state.srcOriginalData = null;
+            state.maps = { AO:null, ROUGH:null, METAL:null, DISP:null, SMOOTH:null };
+            state.rawChannels = { R:null, G:null, B:null, A:null };
+            state.editData = null;
+            el('sourceSlot').classList.remove('filled'); el('sourceSlot').classList.add('missing');
+            el('sourceName').innerText = "Select Image";
+            el('previewContainer').innerHTML = '<div class="empty-state"><div class="empty-icon">🖼</div><div>Preview Output</div></div>';
+            el('resultsGrid').innerHTML = ''; el('resultsGrid').style.display = 'none';
+        }
+
+        // --- UPDATE UI SLOTS ---
         function updateUI() {
-            const area = el('slotsArea'); 
-            area.innerHTML = '';
-            state.tgtFmt = el('targetFormat').value;
+            const area = el('slotsArea'); area.innerHTML = '';
             
-            el('slotTitle').innerText = state.mode === 'separate' ? "Found Channels" : "Required Channels";
-            el('processBtn').innerText = state.mode === 'separate' ? "Extract All" : "Generate Map";
-
-            if(state.mode === 'separate') {
-                if(!state.srcImg) { 
-                    el('processBtn').disabled = true; 
-                    return; 
-                }
-                const fmt = FORMATS[state.srcFmt];
-                ['R','G','B','A'].forEach(c => renderSlot(c, fmt.ch[c], true, false));
-                el('processBtn').disabled = false;
-            } else {
-                const fmt = FORMATS[state.tgtFmt];
-                let ready = true;
+            if(state.mode === 'create' || state.mode === 'convert') {
+                const fmt = FORMATS[el('targetFormat').value];
                 ['R','G','B','A'].forEach(c => {
-                    const type = fmt.ch[c];
-                    if(type === 'EMPTY') return;
-                    
+                    const type = fmt.ch[c]; if(type==='EMPTY') return;
+                    // Auto-derive
                     let has = !!state.maps[type];
-                    if(!has && (type === 'SMOOTH' && state.maps['ROUGH'])) has = true;
-                    if(!has && (type === 'ROUGH' && state.maps['SMOOTH'])) has = true;
+                    if(!has && type==='SMOOTH' && state.maps['ROUGH']) has = true;
+                    if(!has && type==='ROUGH' && state.maps['SMOOTH']) has = true;
                     
-                    renderSlot(c, type, has, true);
-                    if(!has) ready = false;
+                    createSlot(c, NAMES[type], has, state.mode==='create', (f) => loadMap(type, f));
                 });
+                // Check ready
+                const req = ['R','G','B','A'].map(c => fmt.ch[c]).filter(t => t!=='EMPTY');
+                const ready = req.every(t => state.maps[t] || (t==='SMOOTH' && state.maps['ROUGH']) || (t==='ROUGH' && state.maps['SMOOTH']));
                 el('processBtn').disabled = !ready;
+            } 
+            else if (state.mode === 'separate') {
+                if(!state.srcImg) return;
+                const fmt = FORMATS[el('sourceFormat').value];
+                ['R','G','B','A'].forEach(c => {
+                    createSlot(c, NAMES[fmt.ch[c]] + ` (${c})`, true, false, null);
+                });
+                el('processBtn').disabled = false;
+            }
+            else if (state.mode === 'channels') {
+                const op = el('channelOp').value;
+                el('sourceConfig').classList.toggle('d-none', op !== 'split');
+                if(op === 'merge') {
+                    ['R','G','B','A'].forEach(c => {
+                        createSlot(c, `Channel ${c}`, !!state.rawChannels[c], true, (f) => loadRawChannel(c, f));
+                    });
+                    el('processBtn').disabled = !(state.rawChannels.R || state.rawChannels.G || state.rawChannels.B);
+                } else {
+                    // Split
+                    if(state.srcImg) {
+                        ['R','G','B','A'].forEach(c => createSlot(c, `Channel ${c}`, true, false, null));
+                        el('processBtn').disabled = false;
+                    }
+                }
+            }
+            else if (state.mode === 'editor') {
+                el('processBtn').disabled = !state.srcImg;
             }
         }
 
-        function renderSlot(ch, type, isFilled, allowUp) {
+        function createSlot(badge, name, filled, allowUpload, cb) {
             const div = document.createElement('div');
-            // Check mods
-            const mod = state.mods[type] || { edit: false, invert: false };
-            const isMod = mod.edit || mod.invert;
-            
-            div.className = `slot ${isFilled ? 'filled' : 'missing'} ${isMod ? 'edited' : ''}`;
-            const canEdit = isFilled && state.maps[type];
-            
-            let status = isFilled ? "Ready" : "Missing";
-            if(state.mode === 'convert' && isFilled) status = "Extracted";
-            if(!state.maps[type] && isFilled) status = "Calculated";
-
-            // Determine Labels
-            let tagHTML = '';
-            if (mod.edit) {
-                tagHTML += `<span class="status-tag tag-edit">EDITED</span>`;
-            } 
-            if (mod.invert) {
-                tagHTML += `<span class="status-tag tag-invert">INVERTED</span>`;
-            }
-
+            div.className = `slot ${filled ? 'filled' : 'missing'}`;
             div.innerHTML = `
-                <div class="ch-badge bg-${ch}">${ch}</div>
+                <div class="ch-badge bg-${badge.charAt(0)}">${badge}</div>
                 <div class="slot-info">
-                    <div class="slot-name">${NAMES[type]}</div>
-                    <div class="slot-meta">
-                        ${status} 
-                        ${tagHTML}
-                    </div>
+                    <div class="slot-name">${name}</div>
+                    <div class="slot-meta">${filled ? 'Ready' : 'Drag & Drop or Click'}</div>
                 </div>
-                <div class="slot-actions">
-                    ${canEdit ? `<button class="mini-btn" title="Invert" onclick="invertMap('${type}')">◑</button>` : ''}
-                    ${canEdit ? `<button class="mini-btn" title="Edit texture" onclick="openEditor('${type}')">✎</button>` : ''}
-                    ${isFilled && allowUp ? `<button class="mini-btn" title="Replace" onclick="el('in-${ch}').click()">↻</button>` : ''}
-                </div>
-                ${allowUp && !isFilled ? `<div class="import-visual"><span>📁</span><span>Import</span></div>` : ''}
-                ${allowUp ? `<input type="file" id="in-${ch}" class="import-trigger" accept="image/*" onchange="loadMap('${type}',this)">` : ''}
+                ${!filled ? `<div class="import-visual">Upload <span>+</span></div>` : ''}
             `;
+            
+            if(allowUpload) {
+                const inp = document.createElement('input');
+                inp.type = 'file'; inp.accept = 'image/*'; inp.className = 'file-input';
+                inp.onchange = (e) => cb(e.target.files[0]);
+                div.appendChild(inp);
+            }
             el('slotsArea').appendChild(div);
         }
-        
-        // --- INVERT FUNCTION ---
-        function invertMap(type) {
-            const d = state.maps[type];
-            if(!d) return;
-            
-            // Invert pixel data
-            for(let i = 0; i < d.length; i++) {
-                d[i] = 255 - d[i];
-            }
-            
-            // Update modification state
-            if(!state.mods[type]) state.mods[type] = { edit: false, invert: false };
-            state.mods[type].invert = !state.mods[type].invert;
-            
-            updateUI();
-            if(!el('processBtn').disabled && state.mode !== 'separate') process();
-        }
 
-        // --- FILE LOADING ---
+        // --- LOGIC ---
         function loadSource(file) {
             if(!file) return;
-            el('sourceName').innerText = file.name.length > 20 ? file.name.substring(0,18)+'...' : file.name;
+            el('sourceName').innerText = file.name;
             const r = new FileReader();
             r.onload = e => {
                 const img = new Image();
                 img.onload = () => {
-                    state.w = img.width; 
-                    state.h = img.height; 
-                    state.srcImg = img;
-                    el('sourceSlot').classList.add('filled'); 
-                    el('sourceSlot').classList.remove('missing');
-                    unpack();
+                    state.w = img.width; state.h = img.height; state.srcImg = img;
+                    el('dimInfo').innerText = `${state.w} × ${state.h}`;
+                    el('sourceSlot').classList.remove('missing'); el('sourceSlot').classList.add('filled');
+                    
+                    // Canvas data extraction
+                    const c = document.createElement('canvas'); c.width = state.w; c.height = state.h;
+                    const ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
+                    state.srcOriginalData = ctx.getImageData(0,0,state.w,state.h);
+                    
+                    if(state.mode !== 'editor') unpack(); 
+                    else updateEditorPreview();
+                    
+                    updateUI();
                 };
                 img.src = e.target.result;
             };
             r.readAsDataURL(file);
         }
 
-        function loadMap(type, input) {
-            const file = input.files[0]; 
+        function loadMap(type, file) {
             if(!file) return;
             const r = new FileReader();
             r.onload = e => {
                 const img = new Image();
                 img.onload = () => {
-                    if(state.w === 0) { 
-                        state.w = img.width; 
-                        state.h = img.height; 
-                    }
-                    const c = document.createElement('canvas'); 
-                    c.width = state.w; 
-                    c.height = state.h;
-                    const ctx = c.getContext('2d'); 
-                    ctx.drawImage(img, 0, 0, state.w, state.h);
-                    
-                    const extracted = extract(ctx.getImageData(0, 0, state.w, state.h), 0);
-                    state.maps[type] = extracted;
-                    // Save ORIGINAL copy for reset
-                    state.originals[type] = new Uint8ClampedArray(extracted);
-                    state.editSettings[type] = null; // Clear previous edits for new file
-                    
-                    // Reset mods for new file
-                    state.mods[type] = { edit: false, invert: false };
+                    if(state.w===0) { state.w=img.width; state.h=img.height; el('dimInfo').innerText=`${state.w}×${state.h}`;}
+                    const c = document.createElement('canvas'); c.width=state.w; c.height=state.h;
+                    const ctx = c.getContext('2d'); ctx.drawImage(img,0,0,state.w,state.h);
+                    state.maps[type] = extract(ctx.getImageData(0,0,state.w,state.h), 0);
+                    updateUI();
+                };
+                img.src = e.target.result;
+            };
+            r.readAsDataURL(file);
+        }
+
+        function loadRawChannel(ch, file) {
+            if(!file) return;
+            const r = new FileReader();
+            r.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    if(state.w===0) { state.w=img.width; state.h=img.height; el('dimInfo').innerText=`${state.w}×${state.h}`;}
+                    const c = document.createElement('canvas'); c.width=state.w; c.height=state.h;
+                    const ctx = c.getContext('2d'); ctx.drawImage(img,0,0,state.w,state.h);
+                    state.rawChannels[ch] = extract(ctx.getImageData(0,0,state.w,state.h), 0);
                     updateUI();
                 };
                 img.src = e.target.result;
@@ -958,361 +660,200 @@
         }
 
         function unpack() {
-            const c = document.createElement('canvas'); 
-            c.width = state.w; 
-            c.height = state.h;
-            const ctx = c.getContext('2d'); 
-            ctx.drawImage(state.srcImg, 0, 0);
-            const d = ctx.getImageData(0, 0, state.w, state.h);
-            const fmt = FORMATS[state.srcFmt]; 
-            const idx = { R: 0, G: 1, B: 2, A: 3 };
-            state.maps = { AO: null, ROUGH: null, METAL: null, DISP: null, SMOOTH: null };
-            state.originals = {};
-            state.mods = {};
-            state.editSettings = {};
-            ['R','G','B','A'].forEach(ch => {
-                const t = fmt.ch[ch]; 
-                if(t !== 'EMPTY') {
-                    const extracted = extract(d, idx[ch]);
-                    state.maps[t] = extracted;
-                    // Save ORIGINAL copy
-                    state.originals[t] = new Uint8ClampedArray(extracted);
-                }
-            });
+            if(!state.srcOriginalData) return;
+            const d = state.srcOriginalData;
+            
+            if(state.mode === 'channels') {
+                // Raw Split
+                state.rawChannels.R = extract(d, 0);
+                state.rawChannels.G = extract(d, 1);
+                state.rawChannels.B = extract(d, 2);
+                state.rawChannels.A = extract(d, 3);
+            } else {
+                // Preset Split
+                const fmt = FORMATS[el('sourceFormat').value];
+                const idx = {R:0, G:1, B:2, A:3};
+                state.maps = {AO:null,ROUGH:null,METAL:null,DISP:null,SMOOTH:null};
+                ['R','G','B','A'].forEach(ch => {
+                    const t = fmt.ch[ch]; if(t!=='EMPTY') state.maps[t] = extract(d, idx[ch]);
+                });
+            }
             updateUI();
         }
 
         function extract(idata, off) {
-            const len = idata.data.length / 4; 
-            const res = new Uint8ClampedArray(len);
-            for(let i = 0; i < len; i++) res[i] = idata.data[i * 4 + off];
+            const len = idata.data.length/4; const res = new Uint8ClampedArray(len);
+            for(let i=0;i<len;i++) res[i] = idata.data[i*4+off];
             return res;
         }
 
-        // --- EDITOR ---
-        let editTmp = document.createElement('canvas');
+        // --- EDITOR LOGIC ---
+        let editCanvas = document.createElement('canvas'); // Offscreen processing
         
-        function openEditor(type) {
-            state.editMap = type;
-            
-            // ALWAYS Load from ORIGINAL source to allow non-destructive editing
-            const d = state.originals[type]; 
-            if(!d) return;
-            
-            const cvs = el('previewEditCanvas');
-            const sc = Math.min(1, 512 / state.w); 
-            cvs.width = state.w * sc; 
-            cvs.height = state.h * sc;
-            
-            editTmp.width = cvs.width; 
-            editTmp.height = cvs.height;
-            const ctx = editTmp.getContext('2d');
-            const idata = ctx.createImageData(cvs.width, cvs.height);
-            
-            for(let y = 0; y < cvs.height; y++) {
-                for(let x = 0; x < cvs.width; x++) {
-                    const val = d[Math.floor(y / sc) * state.w + Math.floor(x / sc)];
-                    const i = (y * cvs.width + x) * 4;
-                    idata.data[i] = val; 
-                    idata.data[i + 1] = val; 
-                    idata.data[i + 2] = val; 
-                    idata.data[i + 3] = 255;
-                }
-            }
-            ctx.putImageData(idata, 0, 0);
-            
-            // Load saved settings or defaults
-            const defaults = { b: 100, c: 100, s: 100, h: 0, sh: 0, th: 0 };
-            const settings = state.editSettings[type] || defaults;
-
-            el('sl-b').value = settings.b;
-            el('sl-c').value = settings.c;
-            el('sl-s').value = settings.s;
-            el('sl-h').value = settings.h;
-            el('sl-sh').value = settings.sh;
-            el('sl-th').value = settings.th;
-            
-            updatePreviewEdit();
-            el('editorModal').classList.add('active');
-        }
-        
-        function resetEditorSliders() {
-            ['b','c','s'].forEach(k => el('sl-' + k).value = 100);
-            ['h','sh'].forEach(k => el('sl-' + k).value = 0);
-            el('sl-th').value = 0; 
+        function updateEditorPreview() {
+            if(!state.srcOriginalData) return;
+            // Debounce or lightweight preview could go here, but we'll do direct draw for simplicity
+            // To be efficient, we do the processing on a small canvas for preview if image is huge
+            applyRealtimeEdit();
         }
 
-        function resetEditor() {
-            resetEditorSliders();
-            updatePreviewEdit();
-        }
-        
-        function closeEditor() { 
-            el('editorModal').classList.remove('active'); 
-        }
-        
-        function updatePreviewEdit() {
-            const ctx = el('previewEditCanvas').getContext('2d');
-            const b = el('sl-b').value;
-            const c = el('sl-c').value;
-            const s = el('sl-s').value;
-            const h = el('sl-h').value;
+        function applyRealtimeEdit() {
+            if(!state.srcOriginalData) return;
+            const w = state.w; const h = state.h;
             
-            ['b','c','s'].forEach(k => el('v-' + k).innerText = el('sl-' + k).value + '%');
-            el('v-h').innerText = h + '°'; 
-            el('v-sh').innerText = el('sl-sh').value;
-            el('v-th').innerText = el('sl-th').value;
+            // 1. Put Original Data
+            editCanvas.width = w; editCanvas.height = h;
+            const ctx = editCanvas.getContext('2d');
+            ctx.putImageData(state.srcOriginalData, 0, 0);
             
-            ctx.filter = `brightness(${b}%) contrast(${c}%) hue-rotate(${h}deg) saturate(${s}%)`;
-            ctx.drawImage(editTmp, 0, 0);
-            ctx.filter = 'none';
-
-            const th = parseInt(el('sl-th').value);
-            if (th > 0) {
-                const imgData = ctx.getImageData(0,0, ctx.canvas.width, ctx.canvas.height);
-                const d = imgData.data;
-                for(let i=0; i<d.length; i+=4) {
-                    const v = d[i] >= th ? 255 : 0;
-                    d[i] = d[i+1] = d[i+2] = v;
-                }
-                ctx.putImageData(imgData, 0, 0);
-            }
-        }
-
-        function applyEdit() {
-            // Check if modification is actually happening
-            const isDefault = 
-                el('sl-b').value == 100 && 
-                el('sl-c').value == 100 && 
-                el('sl-s').value == 100 && 
-                el('sl-h').value == 0 && 
-                el('sl-sh').value == 0 &&
-                el('sl-th').value == 0;
-
-            const w = state.w; 
-            const h = state.h;
+            // 2. CSS Filters
+            const b = el('sl-b').value, c = el('sl-c').value, s = el('sl-s').value, hue = el('sl-h').value;
             
-            // We apply filters to the ORIGINAL data
-            const d = state.originals[state.editMap];
+            // We use a temp canvas to draw the filtered image
+            const temp = document.createElement('canvas'); temp.width=w; temp.height=h;
+            const tCtx = temp.getContext('2d');
+            tCtx.filter = `brightness(${b}%) contrast(${c}%) hue-rotate(${hue}deg) saturate(${s}%)`;
+            tCtx.drawImage(editCanvas, 0, 0);
             
-            const tempC = document.createElement('canvas'); 
-            tempC.width = w; 
-            tempC.height = h;
-            const ctx = tempC.getContext('2d');
-            
-            const imgD = ctx.createImageData(w, h);
-            for(let i = 0; i < d.length; i++) {
-                imgD.data[i * 4] = d[i]; 
-                imgD.data[i * 4 + 1] = d[i]; 
-                imgD.data[i * 4 + 2] = d[i]; 
-                imgD.data[i * 4 + 3] = 255;
-            }
-            
-            // Filter Pass
-            const filterC = document.createElement('canvas'); 
-            filterC.width = w; 
-            filterC.height = h;
-            filterC.getContext('2d').putImageData(imgD, 0, 0);
-
-            const b = el('sl-b').value;
-            const c = el('sl-c').value;
-            const s = el('sl-s').value;
-            const hue = el('sl-h').value;
-            ctx.filter = `brightness(${b}%) contrast(${c}%) hue-rotate(${hue}deg) saturate(${s}%)`;
-            ctx.drawImage(filterC, 0, 0);
-            ctx.filter = 'none'; 
-
-            let final = ctx.getImageData(0, 0, w, h);
+            // 3. Pixel Manipulation (Sharpness/Threshold)
+            let final = tCtx.getImageData(0,0,w,h);
             const sh = parseInt(el('sl-sh').value);
             if(sh > 0) final = applySharpen(final, sh);
-
+            
             const th = parseInt(el('sl-th').value);
-            if(th > 0) {
-                const fd = final.data;
-                for(let i=0; i<fd.length; i+=4) {
-                    const v = fd[i] >= th ? 255 : 0;
-                    fd[i] = fd[i+1] = fd[i+2] = v;
-                }
-            }
+            if(th > 0) applyThreshold(final, th);
 
-            let extractedFinal = extract(final, 0);
-
-            // Re-apply Invert if active (since we worked from Original)
-            if(state.mods[state.editMap] && state.mods[state.editMap].invert) {
-                for(let i=0; i<extractedFinal.length; i++) {
-                    extractedFinal[i] = 255 - extractedFinal[i];
-                }
-            }
-
-            state.maps[state.editMap] = extractedFinal;
+            // Display
+            el('previewContainer').innerHTML = '';
+            const displayCvs = document.createElement('canvas');
+            displayCvs.width = w; displayCvs.height = h;
+            displayCvs.getContext('2d').putImageData(final, 0, 0);
+            el('previewContainer').appendChild(displayCvs);
             
-            // Update Status
-            if(!state.mods[state.editMap]) state.mods[state.editMap] = { edit: false, invert: false };
-            
-            if(isDefault) {
-                state.mods[state.editMap].edit = false;
-            } else {
-                state.mods[state.editMap].edit = true;
-            }
-
-            // Save Settings
-            state.editSettings[state.editMap] = {
-                b: parseInt(el('sl-b').value),
-                c: parseInt(el('sl-c').value),
-                s: parseInt(el('sl-s').value),
-                h: parseInt(el('sl-h').value),
-                sh: parseInt(el('sl-sh').value),
-                th: parseInt(el('sl-th').value)
-            };
-            
-            closeEditor();
-            updateUI(); 
+            // Save for export
+            state.editData = final;
+            el('processBtn').disabled = false;
         }
 
-        function applySharpen(pixels, amt) {
-            const w = pixels.width;
-            const h = pixels.height;
-            const s = pixels.data;
-            const d = new Uint8ClampedArray(s.length);
-            const m = amt * 0.2;
-            
-            for(let y = 0; y < h; y++) {
-                for(let x = 0; x < w; x++) {
-                    const i = (y * w + x) * 4;
-                    const c = s[i];
-                    const n = s[((y > 0 ? y - 1 : y) * w + x) * 4];
-                    const so = s[((y < h - 1 ? y + 1 : y) * w + x) * 4];
-                    const e = s[(y * w + (x < w - 1 ? x + 1 : x)) * 4];
-                    const we = s[(y * w + (x > 0 ? x - 1 : x)) * 4];
-                    const val = c + (4 * c - n - so - e - we) * m;
-                    d[i] = val; 
-                    d[i + 1] = val; 
-                    d[i + 2] = val; 
-                    d[i + 3] = 255;
+        function applyThreshold(idata, th) {
+            const d = idata.data;
+            for(let i=0; i<d.length; i+=4) {
+                const avg = (d[i]+d[i+1]+d[i+2])/3;
+                const v = avg >= th ? 255 : 0;
+                d[i]=d[i+1]=d[i+2]=v;
+            }
+        }
+
+        function applySharpen(idata, amt) {
+            const w=idata.width, h=idata.height, s=idata.data;
+            const res = new Uint8ClampedArray(s.length);
+            const m = amt*0.2;
+            for(let y=0; y<h; y++) {
+                for(let x=0; x<w; x++) {
+                    const i = (y*w+x)*4;
+                    // Simple kernel convolution
+                    const c=s[i], n=s[((y>0?y-1:y)*w+x)*4], so=s[((y<h-1?y+1:y)*w+x)*4], e=s[(y*w+(x<w-1?x+1:x))*4], we=s[(y*w+(x>0?x-1:x))*4];
+                    const val = c + (4*c - n - so - e - we) * m;
+                    res[i]=val; res[i+1]=val; res[i+2]=val; res[i+3]=s[i+3];
                 }
             }
-            return new ImageData(d, w, h);
+            return new ImageData(res, w, h);
         }
 
-        // --- PROCESS & DOWNLOAD LOGIC ---
-        function getDownloadInfo() {
-            const type = state.exportType;
-            let mime = 'image/png';
-            let ext = 'png';
-            switch(type) {
-                case 'png':  mime = 'image/png'; ext = 'png'; break;
-                case 'jpg':  mime = 'image/jpeg'; ext = 'jpg'; break;
-                case 'bmp':  mime = 'image/bmp'; ext = 'bmp'; break;
-                case 'webp': mime = 'image/webp'; ext = 'webp'; break;
-                case 'bc7':  mime = 'image/png'; ext = 'png'; break; 
-                case 'bc1':  mime = 'image/png'; ext = 'png'; break;
-                case 'astc': mime = 'image/png'; ext = 'png'; break;
-                case 'bc6h': mime = 'image/png'; ext = 'png'; break;
-            }
-            return { mime, ext };
-        }
-
+        // --- PROCESS ---
         function process() {
-            const dlArea = el('downloadSection'); 
-            dlArea.style.display = 'block'; 
-            dlArea.innerHTML = '';
-            el('previewContainer').innerHTML = ''; 
-            el('dimInfo').innerText = `${state.w} × ${state.h}`;
-            
-            const info = getDownloadInfo();
+            if(state.mode === 'editor') {
+                if(state.editData) download(state.editData, `Edited_Texture.${el('exportType').value}`);
+                return;
+            }
 
-            if(state.mode === 'separate') {
-                const resultsDiv = document.createElement('div');
-                resultsDiv.className = 'results-grid';
-                el('previewContainer').appendChild(resultsDiv);
-                el('previewContainer').style.alignItems = "start";
-                el('previewContainer').style.justifyContent = "start";
-                el('previewContainer').style.overflowY = "auto";
+            el('previewContainer').innerHTML = '';
+            el('resultsGrid').innerHTML = ''; el('resultsGrid').style.display='none';
+
+            if(state.mode === 'separate' || (state.mode === 'channels' && el('channelOp').value === 'split')) {
+                // Split Logic
+                el('resultsGrid').style.display='grid';
+                el('previewContainer').style.display='none';
                 
-                const fmt = FORMATS[state.srcFmt];
-                ['R','G','B','A'].forEach(ch => {
-                    const t = fmt.ch[ch]; 
-                    if(t === 'EMPTY') return;
-                    createResultCard(state.maps[t], `${NAMES[t]}.${info.ext}`, resultsDiv, `${NAMES[t]} (${ch})`, info);
-                });
-            } else {
-                el('previewContainer').style.alignItems = "center";
-                el('previewContainer').style.justifyContent = "center";
-                el('previewContainer').style.overflowY = "hidden";
+                const labels = state.mode === 'channels' ? {R:'Red',G:'Green',B:'Blue',A:'Alpha'} : 
+                               {R:'R',G:'G',B:'B',A:'A'}; // Simplification
+                               
+                const dataSrc = state.mode === 'channels' ? state.rawChannels : state.maps;
                 
-                const fmt = FORMATS[state.tgtFmt];
-                const final = new Uint8ClampedArray(state.w * state.h * 4);
-                
-                const getD = (t) => {
-                    if(t === 'EMPTY') return null;
-                    if(state.maps[t]) return state.maps[t];
-                    if(t === 'SMOOTH' && state.maps['ROUGH']) return state.maps['ROUGH'].map(v => 255 - v);
-                    if(t === 'ROUGH' && state.maps['SMOOTH']) return state.maps['SMOOTH'].map(v => 255 - v);
-                    return null;
-                };
-                
-                const r = getD(fmt.ch.R);
-                const g = getD(fmt.ch.G);
-                const b = getD(fmt.ch.B);
-                const a = getD(fmt.ch.A);
-                
-                for(let i = 0; i < state.w * state.h; i++) {
-                    final[i * 4] = r ? r[i] : 0; 
-                    final[i * 4 + 1] = g ? g[i] : 0; 
-                    final[i * 4 + 2] = b ? b[i] : 0; 
-                    final[i * 4 + 3] = a ? a[i] : 255;
+                // If Separate Mode, map back using Format
+                if(state.mode === 'separate') {
+                    const fmt = FORMATS[el('sourceFormat').value];
+                    ['R','G','B','A'].forEach(c => {
+                        const t = fmt.ch[c]; if(t!=='EMPTY') createCard(state.maps[t], NAMES[t]);
+                    });
+                } else {
+                    // Channels Split
+                    ['R','G','B','A'].forEach(c => createCard(state.rawChannels[c], `Channel ${c}`));
                 }
                 
-                const cvs = document.createElement('canvas'); 
-                cvs.width = state.w; 
-                cvs.height = state.h;
-                cvs.getContext('2d').putImageData(new ImageData(final, state.w, state.h), 0, 0);
+                function createCard(data, title) {
+                    if(!data) return;
+                    const cvs = document.createElement('canvas'); cvs.width=state.w; cvs.height=state.h;
+                    const id = new ImageData(state.w, state.h);
+                    for(let i=0;i<data.length;i++) { id.data[i*4]=data[i]; id.data[i*4+1]=data[i]; id.data[i*4+2]=data[i]; id.data[i*4+3]=255; }
+                    cvs.getContext('2d').putImageData(id,0,0);
+                    
+                    const card = document.createElement('div'); card.className='result-card';
+                    card.innerHTML = `<div class="result-thumb"></div><div style="font-size:0.8rem;text-align:center;">${title}</div>`;
+                    card.querySelector('.result-thumb').appendChild(cvs);
+                    const btn = document.createElement('a'); btn.className='dl-btn'; btn.innerText='Download';
+                    btn.onclick = () => download(id, `${title}.${el('exportType').value}`);
+                    card.appendChild(btn);
+                    el('resultsGrid').appendChild(card);
+                }
+            } else {
+                // Merge Logic (Create / Convert / Channels Merge)
+                el('previewContainer').style.display='flex';
+                
+                const final = new Uint8ClampedArray(state.w*state.h*4);
+                let r,g,b,a;
+                
+                if(state.mode === 'channels') {
+                    r=state.rawChannels.R; g=state.rawChannels.G; b=state.rawChannels.B; a=state.rawChannels.A;
+                } else {
+                    const fmt = FORMATS[el('targetFormat').value];
+                    const getD = (t) => {
+                        if(t==='EMPTY') return null;
+                        if(state.maps[t]) return state.maps[t];
+                        if(t==='SMOOTH' && state.maps['ROUGH']) return state.maps['ROUGH'].map(v=>255-v);
+                        if(t==='ROUGH' && state.maps['SMOOTH']) return state.maps['SMOOTH'].map(v=>255-v);
+                        return null;
+                    };
+                    r=getD(fmt.ch.R); g=getD(fmt.ch.G); b=getD(fmt.ch.B); a=getD(fmt.ch.A);
+                }
+
+                for(let i=0; i<state.w*state.h; i++) {
+                    final[i*4] = r?r[i]:0; final[i*4+1] = g?g[i]:0; 
+                    final[i*4+2] = b?b[i]:0; final[i*4+3] = a?a[i]:255;
+                }
+                
+                const id = new ImageData(final, state.w, state.h);
+                const cvs = document.createElement('canvas'); cvs.width=state.w; cvs.height=state.h;
+                cvs.getContext('2d').putImageData(id,0,0);
                 el('previewContainer').appendChild(cvs);
                 
-                const btn = document.createElement('button');
-                btn.className = 'btn-large';
-                btn.innerText = `Download ${state.tgtFmt} (as ${info.ext.toUpperCase()})`;
-                btn.onclick = () => download(cvs, `Texture_${state.tgtFmt}.${info.ext}`, info.mime);
-                dlArea.appendChild(btn);
+                const btn = document.createElement('a'); btn.className='dl-btn'; 
+                btn.style.width='200px'; btn.innerText='Download Merged';
+                btn.onclick = () => download(id, `Texture_Packed.${el('exportType').value}`);
+                el('previewContainer').appendChild(btn);
             }
         }
 
-        function createResultCard(data, name, container, label, info) {
-            if(!data) return;
-            const cvs = document.createElement('canvas'); 
-            cvs.width = state.w; 
-            cvs.height = state.h;
-            const idata = new ImageData(state.w, state.h);
-            for(let i = 0; i < data.length; i++) {
-                idata.data[i * 4] = data[i]; 
-                idata.data[i * 4 + 1] = data[i]; 
-                idata.data[i * 4 + 2] = data[i]; 
-                idata.data[i * 4 + 3] = 255;
-            }
-            cvs.getContext('2d').putImageData(idata, 0, 0);
+        function download(idata, name) {
+            const cvs = document.createElement('canvas'); cvs.width=state.w; cvs.height=state.h;
+            cvs.getContext('2d').putImageData(idata,0,0);
+            const ext = el('exportType').value;
+            let mime = 'image/png';
+            if(ext === 'jpg') mime = 'image/jpeg';
+            if(ext === 'webp') mime = 'image/webp';
             
-            const card = document.createElement('div');
-            card.className = 'result-item';
-            card.innerHTML = `
-                <div class="result-label">${label}</div>
-                <div class="result-thumb"></div>
-            `;
-            card.querySelector('.result-thumb').appendChild(cvs);
-            
-            const btn = document.createElement('a');
-            btn.className = 'dl-btn-small';
-            btn.innerText = `Download .${info.ext}`;
-            btn.onclick = () => download(cvs, name, info.mime);
-            card.appendChild(btn);
-            
-            container.appendChild(card);
-        }
-
-        function download(canvas, name, mime) {
-            const l = document.createElement('a'); 
-            l.download = name; 
-            l.href = canvas.toDataURL(mime, 0.95); 
-            l.click();
+            const l = document.createElement('a'); l.download = name;
+            l.href = cvs.toDataURL(mime, 0.9); l.click();
         }
 
         init();
