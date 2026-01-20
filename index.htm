@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Texture Toolbox Pro V10</title>
+    <title>Texture Toolbox Pro V11</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -29,8 +29,9 @@
             --col-separate: #0ea5e9; /* Sky Blue */
             --col-editor: #10b981;   /* Emerald */
             --col-channels: #f59e0b; /* Amber */
+            --col-generator: #8b5cf6; /* Violet */
 
-            /* Default Accent (Will change via JS) */
+            /* Default Accent */
             --accent: var(--col-create);
             --accent-dim: rgba(209, 119, 86, 0.15);
             
@@ -65,7 +66,6 @@
         
         body {
             background-color: var(--bg-body);
-            /* Dot Grid Background */
             background-image: radial-gradient(var(--grid-color) 1px, transparent 1px);
             background-size: 24px 24px;
             color: var(--text-main);
@@ -96,7 +96,6 @@
             border: 1px solid var(--border); border-radius: 8px;
             overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
-        .brand-icon img { width: 100%; height: 100%; object-fit: contain; }
         .brand-text span { color: var(--accent); transition: color 0.3s; }
 
         .nav-center {
@@ -154,16 +153,19 @@
             display: block; font-size: 0.75rem; font-weight: 700;
             color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase;
         }
-        select {
-            width: 100%; padding: 12px; background: var(--bg-input);
+        select, input[type="number"], input[type="text"] {
+            width: 100%; padding: 10px; background: var(--bg-input);
             border: 1px solid var(--border); color: var(--text-main);
-            border-radius: 8px; cursor: pointer; font-size: 0.9rem; appearance: none;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem; appearance: none;
+            font-family: inherit;
         }
-        select:focus { border-color: var(--accent); }
+        select:focus, input:focus { border-color: var(--accent); }
+        
+        .input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .grid-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 
         /* --- SLOTS & UPLOADS --- */
         .slots-wrapper { display: flex; flex-direction: column; gap: 10px; }
-        
         .slot {
             position: relative; background: var(--bg-input);
             border: 1px solid var(--border); border-radius: 8px; padding: 10px;
@@ -180,34 +182,31 @@
         }
         .bg-R { background: #ef4444; } .bg-G { background: #10b981; }
         .bg-B { background: #3b82f6; } .bg-A { background: #6b7280; }
-        .bg-M { background: #c026d3; } /* Magenta for Mix */
+        .bg-M { background: #c026d3; }
 
         .slot-info { flex: 1; pointer-events: none; min-width: 0; }
         .slot-name { font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
         .slot-meta { font-size: 0.7rem; color: var(--text-dim); display: flex; gap: 6px; align-items: center; }
         
-        /* Indicators */
-        .tag { font-size: 0.6rem; font-weight: 700; padding: 1px 4px; border-radius: 3px; }
-        .tag-edit { color: var(--warning); background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); }
-
-        /* Upload Overlay */
         .file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 1; }
         .import-visual {
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
             display: flex; align-items: center; gap: 6px; pointer-events: none;
             color: var(--text-dim); font-size: 0.75rem; font-weight: 600;
         }
-        .slot:hover .import-visual { color: var(--accent); }
-        .slot.filled .import-visual { display: none; }
 
-        /* Actions */
-        .slot-actions { display: flex; gap: 4px; z-index: 2; }
-        .mini-btn {
-            width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
-            background: var(--bg-input); color: var(--text-sec); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        /* --- GENERATOR SPECIFIC --- */
+        .gen-palette-item { display: flex; gap: 5px; align-items: center; margin-bottom: 6px; }
+        .gen-palette-item input[type="color"] { flex-grow: 1; height: 32px; border: none; padding: 0; background: none; cursor: pointer; border-radius: 4px; }
+        .trans-toggle {
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: var(--bg-input);
+            font-size: 0.7rem; color: var(--text-dim);
         }
-        .mini-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--bg-elevated); }
+        .trans-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
+        
+        .btn-sec { background: var(--bg-input); color: var(--text-sec); border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition:0.2s; }
+        .btn-sec:hover { border-color: var(--accent); color: var(--text-main); }
 
         /* --- PREVIEW --- */
         .preview-wrapper {
@@ -224,6 +223,21 @@
 
         .empty-state { text-align: center; color: var(--text-dim); opacity: 0.5; }
         .empty-icon { font-size: 3rem; margin-bottom: 10px; }
+
+        /* --- EDITOR CONTROLS --- */
+        .slider-row { margin-bottom: 12px; }
+        .slider-head { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-sec); margin-bottom: 4px; font-weight:600;}
+        input[type=range] { width: 100%; -webkit-appearance: none; background: var(--bg-input); height: 4px; border-radius: 2px; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer;
+            box-shadow: 0 0 0 4px var(--bg-card);
+        }
+        .mini-btn {
+            width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+            background: var(--bg-input); color: var(--text-sec); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .mini-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--bg-elevated); }
 
         /* --- RESULTS GRID --- */
         .results-grid {
@@ -247,16 +261,7 @@
         }
         .dl-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-        /* --- EDITOR CONTROLS (SIDEBAR) --- */
-        .editor-controls { display: none; margin-top: 20px; }
-        .slider-row { margin-bottom: 12px; }
-        .slider-head { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-sec); margin-bottom: 4px; }
-        input[type=range] { width: 100%; -webkit-appearance: none; background: var(--bg-input); height: 4px; border-radius: 2px; }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer;
-        }
-
-        /* --- MAIN ACTION --- */
+        /* --- ACTION AREA --- */
         .action-area { padding: 20px; background: var(--bg-elevated); border-top: 1px solid var(--border); }
         .btn-large {
             width: 100%; padding: 14px; border: none; border-radius: 10px;
@@ -266,27 +271,12 @@
         .btn-large:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
         .btn-large:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-input); color: var(--text-sec); box-shadow: none; transform: none; }
 
-        /* --- FOOTER --- */
-        .footer {
-            background: var(--bg-card); border-top: 1px solid var(--border); padding: 15px 24px;
-            display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-sec);
-        }
-        .author { color: var(--accent); font-weight: 700; text-decoration: none; }
-        .social-link { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
-        .social-link:hover { color: var(--text-main); }
-        .social-link svg { width: 16px; height: 16px; fill: currentColor; }
-
         .d-none { display: none !important; }
-        
-        /* Modal for specific edits */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-        .modal-overlay.active { display: flex; }
-        .modal-box { background: var(--bg-card); width: 400px; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
 
         @media (max-width: 900px) {
             .main-container { grid-template-columns: 1fr; padding: 10px; height: auto; overflow: visible;}
             .panel { height: auto; min-height: 400px; }
-            .nav-tabs { display: none; /* Hide on mobile, maybe add burger later */ }
+            .nav-center { overflow-x: scroll; }
         }
     </style>
 </head>
@@ -295,7 +285,11 @@
     <nav class="navbar">
         <div class="brand">
             <div class="brand-icon">
-                <img src="logo.png" alt="TP" onerror="this.style.display='none'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <path d="M4 8h16"></path>
+                    <path d="M8 8v12"></path>
+                </svg>
             </div>
             <div class="brand-text">Texture<span>Toolbox</span></div>
         </div>
@@ -304,6 +298,7 @@
             <button class="nav-tab active" onclick="setMode('create')">Create</button>
             <button class="nav-tab" onclick="setMode('convert')">Convert</button>
             <button class="nav-tab" onclick="setMode('separate')">Separate</button>
+            <button class="nav-tab" onclick="setMode('generator')">Generator</button>
             <button class="nav-tab" onclick="setMode('editor')">Editor</button>
             <button class="nav-tab" onclick="setMode('channels')">Channels</button>
         </div>
@@ -332,10 +327,80 @@
                         </div>
                         <input type="file" class="file-input" id="sourceInput" accept="image/*">
                     </div>
-                    
                     <div id="srcFormatGroup" style="margin-top:12px;">
                         <label>Source Format</label>
                         <select id="sourceFormat"></select>
+                    </div>
+                </div>
+
+                <div id="genConfig" class="d-none config-group">
+                    <label>Dimensions</label>
+                    <div class="input-row">
+                        <input type="number" id="genW" value="1024">
+                        <span style="font-size:0.7rem">x</span>
+                        <input type="number" id="genH" value="1024">
+                    </div>
+                    <div class="grid-row">
+                        <button class="btn-sec" onclick="setGenRes(512)">512</button>
+                        <button class="btn-sec" onclick="setGenRes(1024)">1024</button>
+                        <button class="btn-sec" onclick="setGenRes(2048)">2k</button>
+                    </div>
+
+                    <label style="margin-top:16px;">Pattern</label>
+                    <select id="genType">
+                        <option value="checker">Checkerboard</option>
+                        <option value="brick">Brick (Running Bond)</option>
+                        <option value="herring">Herringbone</option>
+                        <option value="basket">Basketweave</option>
+                        <option value="grid">Grid / Tiles</option>
+                        <option value="hex">Hexagonal</option>
+                        <option value="stripes">Linear Stripes</option>
+                        <option value="dots">Polka Dots</option>
+                        <option value="noise">Noise / Grain</option>
+                    </select>
+
+                    <div style="margin-top:16px;">
+                        <div class="slider-row" id="grp-scale">
+                            <div class="slider-head"><span id="lbl-scale">Scale</span><span id="val-scale">100</span></div>
+                            <input type="range" id="rng-scale" min="1" max="500" value="100">
+                        </div>
+                        <div class="slider-row" id="grp-aspect">
+                            <div class="slider-head"><span>Aspect Ratio</span><span id="val-aspect">2.0</span></div>
+                            <input type="range" id="rng-aspect" min="0.2" max="5.0" step="0.1" value="2.0">
+                        </div>
+                        <div class="slider-row" id="grp-space">
+                            <div class="slider-head"><span>Grout / Spacing</span><span id="val-space">4</span></div>
+                            <input type="range" id="rng-space" min="0" max="50" value="4">
+                        </div>
+                        <div class="slider-row" id="grp-rot">
+                            <div class="slider-head"><span>Rotation</span><span id="val-rot">0°</span></div>
+                            <input type="range" id="rng-rot" min="0" max="180" value="0">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-head"><span id="lbl-rough">Roughness</span><span id="val-rough">0</span></div>
+                            <input type="range" id="rng-rough" min="0" max="100" value="0">
+                        </div>
+                    </div>
+
+                    <div style="border-top:1px solid var(--border); padding-top:16px; margin-top:16px;">
+                        <div class="input-row" style="justify-content: space-between;">
+                            <label>Palette</label>
+                            <div class="input-row" style="gap:4px;">
+                                <span style="font-size:0.7rem; color:var(--text-sec)">Grout:</span>
+                                <input type="color" id="genGrout" value="#111111" style="width:30px; height:24px; padding:0; border:none; border-radius:4px;">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <input type="number" id="genNumC" value="3" min="1" max="8" style="width: 50px;">
+                            <button class="btn-sec" id="genRandBtn" style="flex:1">Random</button>
+                            <button class="btn-sec" id="genGrayBtn" style="flex:1">B&W</button>
+                        </div>
+                        <div id="genColorList" style="margin-top: 8px;"></div>
+                        <div style="margin-top:10px;">
+                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:500;">
+                                <input type="checkbox" id="genLabels"> Enumerate / Label
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -352,7 +417,7 @@
                     <select id="targetFormat"></select>
                 </div>
 
-                <div id="editorControls" class="editor-controls">
+                <div id="editorControls" class="d-none">
                     <div class="slider-row"><div class="slider-head"><span>Brightness</span><span id="v-b">100%</span></div><input type="range" id="sl-b" min="0" max="200" value="100"></div>
                     <div class="slider-row"><div class="slider-head"><span>Contrast</span><span id="v-c">100%</span></div><input type="range" id="sl-c" min="0" max="200" value="100"></div>
                     <div class="slider-row"><div class="slider-head"><span>Saturation</span><span id="v-s">100%</span></div><input type="range" id="sl-s" min="0" max="200" value="100"></div>
@@ -370,14 +435,19 @@
                 </div>
 
             </div>
+            
             <div class="action-area">
                 <div class="config-group" style="margin-bottom:10px;">
-                    <label>Export As</label>
+                    <label>Export Format</label>
                     <select id="exportType" style="padding:8px;">
-                        <option value="png">PNG (Lossless)</option>
+                        <option value="png">PNG (Raster)</option>
                         <option value="jpg">JPG (Compact)</option>
                         <option value="webp">WebP (Modern)</option>
+                        <option value="svg" id="optSVG">SVG (Vector - Gen Only)</option>
                     </select>
+                    <div id="svgWarning" class="d-none" style="color:var(--warning); font-size:0.7rem; margin-top:5px;">
+                         * Noise/Effects render as PNG in SVG mode.
+                    </div>
                 </div>
                 <button id="processBtn" class="btn-large" disabled>Process</button>
             </div>
@@ -401,26 +471,13 @@
 
     </div>
 
-    <footer class="footer">
-        <div>Designed by <span class="author">Abdessamad SAFHA</span></div>
-        <div style="display:flex; gap:20px;">
-            <a href="mailto:6bdessamad@gmail.com" class="social-link">
-                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                Email
-            </a>
-            <a href="https://www.instagram.com/2bdessamad/" target="_blank" class="social-link">
-                <svg viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>
-                Instagram
-            </a>
-        </div>
-    </footer>
-
     <script>
         // --- CONFIG ---
         const MODES = {
             create: { col: '--col-create', name: 'Create', badge: 'PACKER' },
             convert: { col: '--col-convert', name: 'Convert', badge: 'UNPACKER' },
             separate: { col: '--col-separate', name: 'Separate', badge: 'SPLITTER' },
+            generator: { col: '--col-generator', name: 'Generator', badge: 'FORGE' },
             editor: { col: '--col-editor', name: 'Editor', badge: 'STUDIO' },
             channels: { col: '--col-channels', name: 'Channels', badge: 'MIXER' }
         };
@@ -436,16 +493,19 @@
         // --- STATE ---
         let state = {
             mode: 'create',
-            srcImg: null, // Image object
-            srcOriginalData: null, // Uint8ClampedArray of Source
+            srcImg: null, srcOriginalData: null,
             w: 0, h: 0,
-            maps: { AO:null, ROUGH:null, METAL:null, DISP:null, SMOOTH:null }, // For Create/Convert
-            rawChannels: { R:null, G:null, B:null, A:null }, // For Channels Mode
-            editData: null // For Editor Mode
+            maps: { AO:null, ROUGH:null, METAL:null, DISP:null, SMOOTH:null },
+            rawChannels: { R:null, G:null, B:null, A:null },
+            editData: null,
+            // Generator State
+            genColors: [{hex: '#8d5524', trans: false}, {hex: '#c68642', trans: false}, {hex: '#e0ac69', trans: false}],
+            genRandoms: new Float32Array(4000).map(() => Math.random()),
+            genFrameId: null
         };
 
-        // --- DOM ---
         const el = (id) => document.getElementById(id);
+        const genCanvas = document.createElement('canvas'); // Dedicated generator canvas
 
         // --- INIT ---
         function init() {
@@ -455,14 +515,22 @@
             });
             el('targetFormat').value = 'ORD';
 
-            // Inputs
+            // General Events
             el('sourceInput').onchange = (e) => loadSource(e.target.files[0]);
             el('processBtn').onclick = process;
             el('targetFormat').onchange = updateUI;
             el('sourceFormat').onchange = () => { if(state.srcImg) unpack(); };
-            
-            // Sliders (Editor)
+            el('exportType').onchange = () => { 
+                if(state.mode === 'generator' && el('exportType').value === 'svg' && el('genType').value === 'noise') 
+                    el('svgWarning').classList.remove('d-none');
+                else el('svgWarning').classList.add('d-none');
+            };
+
+            // Editor Events
             ['b','c','s','h','sh','th'].forEach(k => el('sl-'+k).oninput = updateEditorPreview);
+
+            // Generator Events
+            initGeneratorControls();
 
             setMode('create');
         }
@@ -475,23 +543,19 @@
 
         function setMode(mode) {
             state.mode = mode;
-            // Update UI Colors
             document.documentElement.style.setProperty('--accent', `var(${MODES[mode].col})`);
             
-            // Update Tabs
             document.querySelectorAll('.nav-tab').forEach(b => {
                 b.classList.toggle('active', b.innerText === MODES[mode].name);
             });
             
-            // Update Headers
             el('modeBadge').innerText = MODES[mode].badge;
             el('modeBadge').style.color = `var(${MODES[mode].col})`;
             el('modeBadge').style.borderColor = `var(${MODES[mode].col})`;
 
-            // Reset State
             resetState();
             
-            // Visibility Logic
+            const isGen = mode === 'generator';
             const showSrc = ['convert', 'separate', 'editor'].includes(mode) || (mode === 'channels' && el('channelOp').value === 'split');
             const showTgt = ['create', 'convert'].includes(mode);
             const showSlots = ['create', 'convert', 'separate', 'channels'].includes(mode);
@@ -499,19 +563,31 @@
             const showChConfig = mode === 'channels';
 
             el('sourceConfig').classList.toggle('d-none', !showSrc);
+            el('genConfig').classList.toggle('d-none', !isGen);
             el('srcFormatGroup').style.display = (mode === 'convert' || mode === 'separate') ? 'block' : 'none';
             el('targetConfig').classList.toggle('d-none', !showTgt);
             el('slotsSection').classList.toggle('d-none', !showSlots);
-            el('editorControls').style.display = showEditor ? 'block' : 'none';
+            el('editorControls').classList.toggle('d-none', !showEditor);
             el('channelsConfig').classList.toggle('d-none', !showChConfig);
-            
+            el('optSVG').disabled = !isGen;
+            if(!isGen && el('exportType').value === 'svg') el('exportType').value = 'png';
+
             el('processBtn').innerText = getBtnText();
             el('processBtn').disabled = true;
-            
+
+            if(isGen) {
+                reqDraw();
+                el('processBtn').disabled = false;
+                el('previewContainer').innerHTML = '';
+                el('previewContainer').appendChild(genCanvas);
+                el('dimInfo').innerText = `${el('genW').value} × ${el('genH').value}`;
+            }
+
             updateUI();
         }
 
         function getBtnText() {
+            if(state.mode === 'generator') return "Download Texture";
             if(state.mode === 'separate' || (state.mode === 'channels' && el('channelOp').value === 'split')) return "Extract All";
             if(state.mode === 'editor') return "Export Edited Image";
             return "Generate Texture";
@@ -528,7 +604,6 @@
             el('resultsGrid').innerHTML = ''; el('resultsGrid').style.display = 'none';
         }
 
-        // --- UPDATE UI SLOTS ---
         function updateUI() {
             const area = el('slotsArea'); area.innerHTML = '';
             
@@ -536,14 +611,11 @@
                 const fmt = FORMATS[el('targetFormat').value];
                 ['R','G','B','A'].forEach(c => {
                     const type = fmt.ch[c]; if(type==='EMPTY') return;
-                    // Auto-derive
                     let has = !!state.maps[type];
                     if(!has && type==='SMOOTH' && state.maps['ROUGH']) has = true;
                     if(!has && type==='ROUGH' && state.maps['SMOOTH']) has = true;
-                    
                     createSlot(c, NAMES[type], has, state.mode==='create', (f) => loadMap(type, f));
                 });
-                // Check ready
                 const req = ['R','G','B','A'].map(c => fmt.ch[c]).filter(t => t!=='EMPTY');
                 const ready = req.every(t => state.maps[t] || (t==='SMOOTH' && state.maps['ROUGH']) || (t==='ROUGH' && state.maps['SMOOTH']));
                 el('processBtn').disabled = !ready;
@@ -565,7 +637,6 @@
                     });
                     el('processBtn').disabled = !(state.rawChannels.R || state.rawChannels.G || state.rawChannels.B);
                 } else {
-                    // Split
                     if(state.srcImg) {
                         ['R','G','B','A'].forEach(c => createSlot(c, `Channel ${c}`, true, false, null));
                         el('processBtn').disabled = false;
@@ -588,7 +659,6 @@
                 </div>
                 ${!filled ? `<div class="import-visual">Upload <span>+</span></div>` : ''}
             `;
-            
             if(allowUpload) {
                 const inp = document.createElement('input');
                 inp.type = 'file'; inp.accept = 'image/*'; inp.className = 'file-input';
@@ -598,7 +668,7 @@
             el('slotsArea').appendChild(div);
         }
 
-        // --- LOGIC ---
+        // --- IMAGE LOGIC ---
         function loadSource(file) {
             if(!file) return;
             el('sourceName').innerText = file.name;
@@ -610,14 +680,12 @@
                     el('dimInfo').innerText = `${state.w} × ${state.h}`;
                     el('sourceSlot').classList.remove('missing'); el('sourceSlot').classList.add('filled');
                     
-                    // Canvas data extraction
                     const c = document.createElement('canvas'); c.width = state.w; c.height = state.h;
                     const ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
                     state.srcOriginalData = ctx.getImageData(0,0,state.w,state.h);
                     
                     if(state.mode !== 'editor') unpack(); 
                     else updateEditorPreview();
-                    
                     updateUI();
                 };
                 img.src = e.target.result;
@@ -662,15 +730,12 @@
         function unpack() {
             if(!state.srcOriginalData) return;
             const d = state.srcOriginalData;
-            
             if(state.mode === 'channels') {
-                // Raw Split
                 state.rawChannels.R = extract(d, 0);
                 state.rawChannels.G = extract(d, 1);
                 state.rawChannels.B = extract(d, 2);
                 state.rawChannels.A = extract(d, 3);
             } else {
-                // Preset Split
                 const fmt = FORMATS[el('sourceFormat').value];
                 const idx = {R:0, G:1, B:2, A:3};
                 state.maps = {AO:null,ROUGH:null,METAL:null,DISP:null,SMOOTH:null};
@@ -688,49 +753,37 @@
         }
 
         // --- EDITOR LOGIC ---
-        let editCanvas = document.createElement('canvas'); // Offscreen processing
+        let editCanvas = document.createElement('canvas');
         
         function updateEditorPreview() {
             if(!state.srcOriginalData) return;
-            // Debounce or lightweight preview could go here, but we'll do direct draw for simplicity
-            // To be efficient, we do the processing on a small canvas for preview if image is huge
             applyRealtimeEdit();
         }
 
         function applyRealtimeEdit() {
             if(!state.srcOriginalData) return;
             const w = state.w; const h = state.h;
-            
-            // 1. Put Original Data
             editCanvas.width = w; editCanvas.height = h;
             const ctx = editCanvas.getContext('2d');
             ctx.putImageData(state.srcOriginalData, 0, 0);
             
-            // 2. CSS Filters
-            const b = el('sl-b').value, c = el('sl-c').value, s = el('sl-s').value, hue = el('sl-h').value;
-            
-            // We use a temp canvas to draw the filtered image
             const temp = document.createElement('canvas'); temp.width=w; temp.height=h;
             const tCtx = temp.getContext('2d');
+            const b = el('sl-b').value, c = el('sl-c').value, s = el('sl-s').value, hue = el('sl-h').value;
             tCtx.filter = `brightness(${b}%) contrast(${c}%) hue-rotate(${hue}deg) saturate(${s}%)`;
             tCtx.drawImage(editCanvas, 0, 0);
             
-            // 3. Pixel Manipulation (Sharpness/Threshold)
             let final = tCtx.getImageData(0,0,w,h);
             const sh = parseInt(el('sl-sh').value);
             if(sh > 0) final = applySharpen(final, sh);
-            
             const th = parseInt(el('sl-th').value);
             if(th > 0) applyThreshold(final, th);
 
-            // Display
             el('previewContainer').innerHTML = '';
             const displayCvs = document.createElement('canvas');
             displayCvs.width = w; displayCvs.height = h;
             displayCvs.getContext('2d').putImageData(final, 0, 0);
             el('previewContainer').appendChild(displayCvs);
-            
-            // Save for export
             state.editData = final;
             el('processBtn').disabled = false;
         }
@@ -751,7 +804,6 @@
             for(let y=0; y<h; y++) {
                 for(let x=0; x<w; x++) {
                     const i = (y*w+x)*4;
-                    // Simple kernel convolution
                     const c=s[i], n=s[((y>0?y-1:y)*w+x)*4], so=s[((y<h-1?y+1:y)*w+x)*4], e=s[(y*w+(x<w-1?x+1:x))*4], we=s[(y*w+(x>0?x-1:x))*4];
                     const val = c + (4*c - n - so - e - we) * m;
                     res[i]=val; res[i+1]=val; res[i+2]=val; res[i+3]=s[i+3];
@@ -760,10 +812,252 @@
             return new ImageData(res, w, h);
         }
 
-        // --- PROCESS ---
+        // --- GENERATOR LOGIC ---
+        function initGeneratorControls() {
+            const sync = (r, i, l) => { 
+                r.oninput = () => { if(l) el(l).innerText = r.value + (l.includes('rot')?'°':''); reqDraw(); };
+            };
+            sync(el('rng-scale'), null, 'val-scale');
+            sync(el('rng-aspect'), null, 'val-aspect');
+            sync(el('rng-rot'), null, 'val-rot');
+            sync(el('rng-space'), null, 'val-space');
+            sync(el('rng-rough'), null, 'val-rough');
+
+            ['genW', 'genH', 'genType', 'genGrout', 'genLabels'].forEach(id => el(id).oninput = reqDraw);
+            el('genNumC').onchange = genPalette;
+            el('genRandBtn').onclick = () => { randCols(false); reqDraw(); };
+            el('genGrayBtn').onclick = () => { randCols(true); reqDraw(); };
+
+            genPalette();
+        }
+
+        function setGenRes(s) { el('genW').value=s; el('genH').value=s; reqDraw(); }
+
+        function genPalette() {
+            let count = parseInt(el('genNumC').value);
+            while(state.genColors.length < count) state.genColors.push({hex: randHex(), trans: false});
+            
+            const list = el('genColorList'); list.innerHTML = '';
+            for(let i=0; i<count; i++) {
+                const d = document.createElement('div'); d.className = 'gen-palette-item';
+                const inp = document.createElement('input'); inp.type='color'; inp.value=state.genColors[i].hex;
+                inp.oninput = (e) => { state.genColors[i].hex = e.target.value; reqDraw(); };
+                
+                const btn = document.createElement('div'); 
+                btn.className = `trans-toggle ${state.genColors[i].trans ? 'active' : ''}`;
+                btn.innerText = 'Ø';
+                btn.onclick = () => { 
+                    state.genColors[i].trans = !state.genColors[i].trans; 
+                    btn.className = state.genColors[i].trans ? 'trans-toggle active' : 'trans-toggle'; 
+                    reqDraw(); 
+                };
+                d.append(inp, btn); list.append(d);
+            }
+        }
+
+        function randCols(bw) {
+            state.genColors.forEach(c => {
+                const v = bw ? Math.floor(Math.random()*200+55) : Math.floor(Math.random()*16777215);
+                const h = v.toString(16).padStart(6,'0');
+                c.hex = bw ? `#${h.substring(0,2).repeat(3)}` : `#${h}`;
+            });
+            genPalette();
+        }
+        function randHex() { return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); }
+
+        function reqDraw() {
+            if(state.mode !== 'generator') return;
+            const t = el('genType').value;
+            const isNoise = t === 'noise';
+            el('lbl-scale').innerText = isNoise ? "Grain Size" : "Scale";
+            el('lbl-rough').innerText = isNoise ? "Intensity" : "Roughness";
+            el('grp-aspect').classList.toggle('d-none', ['dots','noise','hex','checker','stripes'].includes(t));
+            el('grp-rot').classList.toggle('d-none', ['noise','checker'].includes(t));
+            el('grp-space').classList.toggle('d-none', ['noise','stripes'].includes(t));
+
+            if(state.genFrameId) cancelAnimationFrame(state.genFrameId);
+            state.genFrameId = requestAnimationFrame(drawGen);
+        }
+
+        function drawGen() {
+            const w = parseInt(el('genW').value); const h = parseInt(el('genH').value);
+            genCanvas.width = w; genCanvas.height = h;
+            el('dimInfo').innerText = `${w} × ${h}`;
+            const ctx = genCanvas.getContext('2d');
+            const p = {
+                t: el('genType').value,
+                size: parseInt(el('rng-scale').value),
+                asp: parseFloat(el('rng-aspect').value),
+                gap: parseInt(el('rng-space').value),
+                rot: parseInt(el('rng-rot').value),
+                rough: parseInt(el('rng-rough').value),
+                lbl: el('genLabels').checked,
+                pad: (parseInt(el('rng-rot').value)!==0) ? Math.max(w,h) : 0
+            };
+
+            ctx.clearRect(0,0,w,h);
+            if(p.t !== 'noise') {
+                ctx.fillStyle = el('genGrout').value;
+                ctx.fillRect(0,0,w,h);
+            }
+            ctx.save();
+            if(p.rot !== 0 && p.t !== 'noise') {
+                ctx.translate(w/2, h/2); ctx.rotate(p.rot * Math.PI / 180); ctx.translate(-w/2, -h/2);
+            }
+            renderPattern(ctx, w, h, p, false);
+            ctx.restore();
+        }
+
+        function renderPattern(c, w, h, p, isSVG) {
+            const ox = -p.pad, oy = -p.pad;
+            const dw = w + p.pad*2, dh = h + p.pad*2;
+            const svgOut = [];
+
+            const rect = (x,y,rw,rh,idx, svgAccum) => {
+                const cDef = state.genColors[idx % state.genColors.length];
+                if(cDef.trans) return;
+                const fill = getRoughColor(cDef.hex, p.rough, idx);
+                if(isSVG) {
+                    svgAccum.push(`<rect x="${x}" y="${y}" width="${rw}" height="${rh}" fill="${fill}" />`);
+                    if(p.lbl) svgAccum.push(svgText(x+rw/2, y+rh/2, idx, rw));
+                } else {
+                    c.fillStyle = fill; c.fillRect(x,y,rw,rh);
+                    if(p.lbl) drawLbl(c, x+rw/2, y+rh/2, idx, rw);
+                }
+            };
+
+            if(p.t === 'noise') {
+                if(!isSVG) drawNoise(c, w, h, p.size, p.rough); 
+            }
+            else if(p.t === 'checker') {
+                const cols = Math.ceil(dw/p.size), rows = Math.ceil(dh/p.size);
+                for(let y=0; y<rows; y++) for(let x=0; x<cols; x++) 
+                    rect(ox+x*p.size, oy+y*p.size, p.size, p.size, (x+y)%2, svgOut);
+            }
+            else if(p.t === 'grid') {
+                const wb = p.size, hb = p.size*p.asp;
+                const cols = Math.ceil(dw/wb), rows = Math.ceil(dh/hb);
+                for(let y=0; y<rows; y++) for(let x=0; x<cols; x++)
+                    rect(ox+x*wb+p.gap/2, oy+y*hb+p.gap/2, wb-p.gap, hb-p.gap, y*cols+x, svgOut);
+            }
+            else if(p.t === 'brick') {
+                const wb = p.size*p.asp, hb = p.size;
+                const cols = Math.ceil(dw/wb)+1, rows = Math.ceil(dh/hb);
+                for(let y=0; y<rows; y++) {
+                    const off = (y%2)*(wb/2);
+                    for(let x=-1; x<cols; x++) 
+                        rect(ox+x*wb+off+p.gap/2, oy+y*hb+p.gap/2, wb-p.gap, hb-p.gap, y*cols+x, svgOut);
+                }
+            }
+            else if(p.t === 'stripes') {
+                const diag = Math.sqrt(w*w + h*h);
+                let pos = -diag, idx = 0;
+                while(pos < diag) {
+                    const cDef = state.genColors[idx % state.genColors.length];
+                    if(!cDef.trans) {
+                        const fill = getRoughColor(cDef.hex, p.rough, idx);
+                        if(isSVG) svgOut.push(`<rect x="${pos}" y="${-diag}" width="${p.size}" height="${diag*2}" fill="${fill}" />`);
+                        else { c.fillStyle = fill; c.fillRect(pos, -diag, p.size, diag*2); }
+                    }
+                    pos += p.size; idx++;
+                }
+            }
+            else if(p.t === 'dots') {
+                const grid = p.size + p.gap, rad = p.size/2;
+                const cols = Math.ceil(dw/grid), rows = Math.ceil(dh/grid);
+                let idx = 0;
+                for(let y=0; y<rows; y++) for(let x=0; x<cols; x++) {
+                    const cDef = state.genColors[idx % state.genColors.length];
+                    if(!cDef.trans) {
+                        const cx = ox+x*grid+rad, cy = oy+y*grid+rad;
+                        if(isSVG) svgOut.push(`<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${cDef.hex}" />`);
+                        else { c.beginPath(); c.arc(cx,cy,rad,0,Math.PI*2); c.fillStyle=cDef.hex; c.fill(); }
+                    }
+                    idx++;
+                }
+            }
+            return svgOut;
+        }
+
+        function drawNoise(c, w, h, scale, intensity) {
+            const roughFact = intensity / 100 * 255;
+            const cols = Math.ceil(w/scale);
+            const rows = Math.ceil(h/scale);
+            
+            c.fillStyle = state.genColors[0].hex;
+            c.fillRect(0,0,w,h);
+            if(state.genColors[0].trans) c.clearRect(0,0,w,h);
+
+            for(let y=0; y<rows; y++) {
+                for(let x=0; x<cols; x++) {
+                    const idx = (y*cols + x);
+                    const rand = state.genRandoms[idx % 4000];
+                    const noiseVal = (rand - 0.5) * roughFact;
+                    if(noiseVal !== 0) {
+                        c.fillStyle = noiseVal > 0 ? `rgba(255,255,255,${noiseVal/255})` : `rgba(0,0,0,${Math.abs(noiseVal)/255})`;
+                        c.fillRect(x*scale, y*scale, scale, scale);
+                    }
+                }
+            }
+        }
+
+        function drawLbl(c, x, y, txt, w) {
+            c.fillStyle = '#fff'; c.textAlign='center'; c.textBaseline='middle';
+            c.font = `bold ${Math.max(10, w/3)}px Inter`;
+            c.fillText(txt, x, y);
+            c.strokeStyle = '#000'; c.lineWidth = 2; c.strokeText(txt, x, y);
+        }
+
+        function svgText(x, y, txt, w) {
+            const fs = Math.max(10, w/3);
+            return `<text x="${x}" y="${y}" font-family="Inter, sans-serif" font-weight="bold" font-size="${fs}" text-anchor="middle" dominant-baseline="middle" fill="white" stroke="black" stroke-width="${fs/10}">${txt}</text>`;
+        }
+
+        function getRoughColor(hex, rough, idx) {
+            if(rough <= 0) return hex;
+            const r = parseInt(hex.substr(1,2),16);
+            const g = parseInt(hex.substr(3,2),16);
+            const b = parseInt(hex.substr(5,2),16);
+            const n = (state.genRandoms[idx % 4000] - 0.5) * 100 * (rough/100);
+            const clamp = (v) => Math.min(255, Math.max(0, Math.round(v)));
+            return `rgb(${clamp(r+n)},${clamp(g+n)},${clamp(b+n)})`;
+        }
+
+        // --- EXPORT / PROCESS ---
         function process() {
+            const fmt = el('exportType').value;
+            
+            if(state.mode === 'generator') {
+                if(fmt === 'svg' && el('genType').value !== 'noise') {
+                    // SVG Export
+                    const w = el('genW').value, h = el('genH').value;
+                    const p = {
+                        t: el('genType').value, size: parseInt(el('rng-scale').value),
+                        asp: parseFloat(el('rng-aspect').value), gap: parseInt(el('rng-space').value),
+                        rot: parseInt(el('rng-rot').value), rough: parseInt(el('rng-rough').value),
+                        lbl: el('genLabels').checked, pad: (parseInt(el('rng-rot').value)!==0) ? Math.max(w,h) : 0
+                    };
+                    const items = renderPattern(null, parseInt(w), parseInt(h), p, true);
+                    let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+                    svgContent += `<rect width="100%" height="100%" fill="${el('genGrout').value}"/>`;
+                    const cx = w/2, cy = h/2;
+                    if(p.rot !== 0 && p.t !== 'stripes') svgContent += `<g transform="rotate(${p.rot} ${cx} ${cy})">`;
+                    else if(p.t === 'stripes' && p.rot !== 0) svgContent += `<g transform="translate(${cx} ${cy}) rotate(${p.rot})">`;
+                    else svgContent += `<g>`;
+                    svgContent += items.join('');
+                    svgContent += `</g></svg>`;
+                    const blob = new Blob([svgContent], {type: 'image/svg+xml'});
+                    const link = document.createElement('a'); link.href = URL.createObjectURL(blob);
+                    link.download = `Pattern_${Date.now()}.svg`; link.click();
+                } else {
+                    // Raster Export
+                    download(genCanvas.getContext('2d').getImageData(0,0,genCanvas.width,genCanvas.height), `Pattern_${Date.now()}.${fmt}`);
+                }
+                return;
+            }
+
             if(state.mode === 'editor') {
-                if(state.editData) download(state.editData, `Edited_Texture.${el('exportType').value}`);
+                if(state.editData) download(state.editData, `Edited_Texture.${fmt}`);
                 return;
             }
 
@@ -771,52 +1065,26 @@
             el('resultsGrid').innerHTML = ''; el('resultsGrid').style.display='none';
 
             if(state.mode === 'separate' || (state.mode === 'channels' && el('channelOp').value === 'split')) {
-                // Split Logic
+                // SPLIT
                 el('resultsGrid').style.display='grid';
                 el('previewContainer').style.display='none';
-                
-                const labels = state.mode === 'channels' ? {R:'Red',G:'Green',B:'Blue',A:'Alpha'} : 
-                               {R:'R',G:'G',B:'B',A:'A'}; // Simplification
-                               
-                const dataSrc = state.mode === 'channels' ? state.rawChannels : state.maps;
-                
-                // If Separate Mode, map back using Format
                 if(state.mode === 'separate') {
-                    const fmt = FORMATS[el('sourceFormat').value];
+                    const sFmt = FORMATS[el('sourceFormat').value];
                     ['R','G','B','A'].forEach(c => {
-                        const t = fmt.ch[c]; if(t!=='EMPTY') createCard(state.maps[t], NAMES[t]);
+                        const t = sFmt.ch[c]; if(t!=='EMPTY') createCard(state.maps[t], NAMES[t]);
                     });
                 } else {
-                    // Channels Split
                     ['R','G','B','A'].forEach(c => createCard(state.rawChannels[c], `Channel ${c}`));
                 }
-                
-                function createCard(data, title) {
-                    if(!data) return;
-                    const cvs = document.createElement('canvas'); cvs.width=state.w; cvs.height=state.h;
-                    const id = new ImageData(state.w, state.h);
-                    for(let i=0;i<data.length;i++) { id.data[i*4]=data[i]; id.data[i*4+1]=data[i]; id.data[i*4+2]=data[i]; id.data[i*4+3]=255; }
-                    cvs.getContext('2d').putImageData(id,0,0);
-                    
-                    const card = document.createElement('div'); card.className='result-card';
-                    card.innerHTML = `<div class="result-thumb"></div><div style="font-size:0.8rem;text-align:center;">${title}</div>`;
-                    card.querySelector('.result-thumb').appendChild(cvs);
-                    const btn = document.createElement('a'); btn.className='dl-btn'; btn.innerText='Download';
-                    btn.onclick = () => download(id, `${title}.${el('exportType').value}`);
-                    card.appendChild(btn);
-                    el('resultsGrid').appendChild(card);
-                }
             } else {
-                // Merge Logic (Create / Convert / Channels Merge)
+                // MERGE
                 el('previewContainer').style.display='flex';
-                
                 const final = new Uint8ClampedArray(state.w*state.h*4);
                 let r,g,b,a;
-                
                 if(state.mode === 'channels') {
                     r=state.rawChannels.R; g=state.rawChannels.G; b=state.rawChannels.B; a=state.rawChannels.A;
                 } else {
-                    const fmt = FORMATS[el('targetFormat').value];
+                    const tFmt = FORMATS[el('targetFormat').value];
                     const getD = (t) => {
                         if(t==='EMPTY') return null;
                         if(state.maps[t]) return state.maps[t];
@@ -824,7 +1092,7 @@
                         if(t==='ROUGH' && state.maps['SMOOTH']) return state.maps['SMOOTH'].map(v=>255-v);
                         return null;
                     };
-                    r=getD(fmt.ch.R); g=getD(fmt.ch.G); b=getD(fmt.ch.B); a=getD(fmt.ch.A);
+                    r=getD(tFmt.ch.R); g=getD(tFmt.ch.G); b=getD(tFmt.ch.B); a=getD(tFmt.ch.A);
                 }
 
                 for(let i=0; i<state.w*state.h; i++) {
@@ -839,13 +1107,29 @@
                 
                 const btn = document.createElement('a'); btn.className='dl-btn'; 
                 btn.style.width='200px'; btn.innerText='Download Merged';
-                btn.onclick = () => download(id, `Texture_Packed.${el('exportType').value}`);
+                btn.onclick = () => download(id, `Texture_Packed.${fmt}`);
                 el('previewContainer').appendChild(btn);
             }
         }
 
-        function download(idata, name) {
+        function createCard(data, title) {
+            if(!data) return;
             const cvs = document.createElement('canvas'); cvs.width=state.w; cvs.height=state.h;
+            const id = new ImageData(state.w, state.h);
+            for(let i=0;i<data.length;i++) { id.data[i*4]=data[i]; id.data[i*4+1]=data[i]; id.data[i*4+2]=data[i]; id.data[i*4+3]=255; }
+            cvs.getContext('2d').putImageData(id,0,0);
+            
+            const card = document.createElement('div'); card.className='result-card';
+            card.innerHTML = `<div class="result-thumb"></div><div style="font-size:0.8rem;text-align:center;">${title}</div>`;
+            card.querySelector('.result-thumb').appendChild(cvs);
+            const btn = document.createElement('a'); btn.className='dl-btn'; btn.innerText='Download';
+            btn.onclick = () => download(id, `${title}.${el('exportType').value}`);
+            card.appendChild(btn);
+            el('resultsGrid').appendChild(card);
+        }
+
+        function download(idata, name) {
+            const cvs = document.createElement('canvas'); cvs.width=idata.width; cvs.height=idata.height;
             cvs.getContext('2d').putImageData(idata,0,0);
             const ext = el('exportType').value;
             let mime = 'image/png';
